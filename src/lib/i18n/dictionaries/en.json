@@ -1,0 +1,80 @@
+{
+  "nav": {
+    "home": "Home",
+    "blog": "Blog",
+    "projects": "Projects",
+    "dashboard": "Dashboard",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "hero": {
+    "title": "Welcome to My Blog",
+    "subtitle": "I write about programming, technology, and everything new"
+  },
+  "featured": {
+    "title": "Featured Projects",
+    "view_all": "View All"
+  },
+  "articles": {
+    "title": "Latest Articles",
+    "read_more": "Read More",
+    "no_articles": "No articles yet"
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Articles about programming and technology",
+    "search": "Search articles...",
+    "no_posts": "No posts yet",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page"
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "A collection of my projects",
+    "filter_all": "All",
+    "no_projects": "No projects yet",
+    "view_github": "GitHub",
+    "view_demo": "Live Demo"
+  },
+  "article": {
+    "by": "By",
+    "read_next": "Read Next"
+  },
+  "footer": {
+    "copyright": "All rights reserved",
+    "builtWith": "Built with"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "backToHome": "Back to Home"
+  },
+  "dashboard": {
+    "overview": "Dashboard",
+    "overviewDesc": "Welcome to your admin dashboard",
+    "posts": "Posts",
+    "postsDesc": "Manage your blog posts",
+    "createPost": "New Post",
+    "createPostDesc": "Create a new blog post or project",
+    "editPost": "Edit Post",
+    "editPostDesc": "Update your blog post",
+    "deletePost": "Delete",
+    "confirmDelete": "Are you sure you want to delete this post?",
+    "published": "Published",
+    "draft": "Draft",
+    "settings": "Settings",
+    "profile": "Profile",
+    "totalPosts": "Total Posts",
+    "publishedPosts": "Published",
+    "draftPosts": "Drafts",
+    "recentPosts": "Recent Posts",
+    "noPosts": "No posts yet",
+    "category": "Category",
+    "status": "Status",
+    "date": "Date",
+    "actions": "Actions",
+    "title": "Title",
+    "edit": "Edit"
+  }
+}

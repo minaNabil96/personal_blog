@@ -1,0 +1,80 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "blog": "المدونة",
+    "projects": "المشاريع",
+    "dashboard": "لوحة التحكم",
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج"
+  },
+  "hero": {
+    "title": "مرحباً بك في مدونتي",
+    "subtitle": "أكتب عن البرمجة والتكنولوجيا وكل ما هو جديد"
+  },
+  "featured": {
+    "title": "مشاريع مميزة",
+    "view_all": "عرض الكل"
+  },
+  "articles": {
+    "title": "أحدث المقالات",
+    "read_more": "اقرأ المزيد",
+    "no_articles": "لا توجد مقالات بعد"
+  },
+  "blog": {
+    "title": "المدونة",
+    "subtitle": "مقالات عن البرمجة والتكنولوجيا",
+    "search": "ابحث في المقالات...",
+    "no_posts": "لا توجد مقالات بعد",
+    "previous": "السابق",
+    "next": "التالي",
+    "page": "صفحة"
+  },
+  "projects": {
+    "title": "المشاريع",
+    "subtitle": "مجموعة من مشاريعي",
+    "filter_all": "الكل",
+    "no_projects": "لا توجد مشاريع بعد",
+    "view_github": "GitHub",
+    "view_demo": "تجربة مباشرة"
+  },
+  "article": {
+    "by": "بواسطة",
+    "read_next": "اقرأ أيضاً"
+  },
+  "footer": {
+    "copyright": "جميع الحقوق محفوظة",
+    "builtWith": "بُني باستخدام"
+  },
+  "common": {
+    "loading": "جار التحميل...",
+    "error": "حدث خطأ",
+    "backToHome": "العودة إلى الرئيسية"
+  },
+  "dashboard": {
+    "overview": "لوحة التحكم",
+    "overviewDesc": "مرحباً بك في لوحة التحكم",
+    "posts": "المقالات",
+    "postsDesc": "إدارة مقالات المدونة",
+    "createPost": "مقال جديد",
+    "createPostDesc": "إنشاء مقال أو مشروع جديد",
+    "editPost": "تعديل المقال",
+    "editPostDesc": "تحديث المقال",
+    "deletePost": "حذف",
+    "confirmDelete": "هل أنت متأكد من حذف هذا المقال؟",
+    "published": "منشور",
+    "draft": "مسودة",
+    "settings": "الإعدادات",
+    "profile": "الملف الشخصي",
+    "totalPosts": "إجمالي المقالات",
+    "publishedPosts": "منشور",
+    "draftPosts": "مسودة",
+    "recentPosts": "أحدث المقالات",
+    "noPosts": "لا توجد مقالات بعد",
+    "category": "التصنيف",
+    "status": "الحالة",
+    "date": "التاريخ",
+    "actions": "إجراءات",
+    "title": "العنوان",
+    "edit": "تعديل"
+  }
+}
