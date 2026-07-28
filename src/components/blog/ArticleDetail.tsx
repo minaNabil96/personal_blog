@@ -8,6 +8,11 @@ import remarkGfm from 'remark-gfm'
 import dayjs from 'dayjs'
 import { ArrowRight, ArrowLeft, Calendar, User } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
+import { CodeBlock } from '@/components/blog/CodeBlock'
+import { MermaidBlock } from '@/components/blog/MermaidBlock'
+import { ProseImage } from '@/components/blog/ProseImage'
+import type { Components } from 'react-markdown'
+import type { ReactNode } from 'react'
 
 interface Post {
   id: string
@@ -35,6 +40,44 @@ interface ArticleDetailProps {
   }
   post: Post
   relatedPosts: RelatedPost[]
+}
+
+const components: Partial<Components> = {
+  code({ className, children, ...props }) {
+    const match = /language-(\w+)/.exec(className || '')
+    const lang = match?.[1]
+    const isInline = !match && !className
+    const code = String(children)
+
+    if (isInline) {
+      return <code className={className} {...props}>{children}</code>
+    }
+
+    if (lang === 'mermaid') {
+      return <MermaidBlock chart={code} />
+    }
+
+    return <CodeBlock className={className}>{code}</CodeBlock>
+  },
+  pre({ children }) {
+    return <>{children}</>
+  },
+  img({ src, alt, title }) {
+    return <ProseImage src={src} alt={alt} title={title} />
+  },
+  table({ children }) {
+    return (
+      <div className="max-w-full overflow-x-auto rounded-xl border border-zinc-800/50 my-6">
+        <table className="w-full border-collapse">{children}</table>
+      </div>
+    )
+  },
+  th({ children }) {
+    return <th className="border border-zinc-700 bg-zinc-800/50 px-4 py-2.5 text-sm font-semibold text-zinc-200">{children}</th>
+  },
+  td({ children }) {
+    return <td className="border border-zinc-700 px-4 py-2.5 text-sm text-zinc-300">{children}</td>
+  },
 }
 
 export default function ArticleDetail({
@@ -77,23 +120,14 @@ export default function ArticleDetail({
           <h1 className="mt-4 text-3xl font-bold text-zinc-100 sm:text-4xl">
             {post.title}
           </h1>
-
-          {post.tags.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-400"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
 
-        <div className="prose prose-invert prose-zinc max-w-none prose-headings:font-bold prose-headings:text-zinc-100 prose-p:text-zinc-300 prose-p:leading-relaxed prose-a:text-cyan-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-zinc-200 prose-code:text-cyan-300 prose-code:bg-zinc-800/50 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-pre:bg-zinc-900/80 prose-pre:border prose-pre:border-zinc-800/50 prose-pre:rounded-xl prose-pre:overflow-x-auto prose-img:rounded-xl prose-img:my-8 prose-hr:border-zinc-800 prose-blockquote:border-cyan-500/50 prose-blockquote:text-zinc-400 prose-blockquote:not-italic prose-li:text-zinc-300 [&_table]:w-full [&_table]:border-collapse [&_table]:my-6 [&_th]:border [&_th]:border-zinc-700 [&_th]:bg-zinc-800/50 [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-zinc-200 [&_th]:font-semibold [&_th]:text-sm [&_td]:border [&_td]:border-zinc-700 [&_td]:px-4 [&_td]:py-2.5 [&_td]:text-sm [&_td]:text-zinc-300 [&_tr:last-child_td]:border-b-0">
-          <ReactMarkdown rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
+        <div className="prose prose-invert max-w-none leading-loose">
+          <ReactMarkdown
+            rehypePlugins={[rehypeRaw]}
+            remarkPlugins={[remarkGfm]}
+            components={components}
+          >
             {post.content}
           </ReactMarkdown>
         </div>
