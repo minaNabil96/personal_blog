@@ -28,7 +28,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   const isAuthenticated = !!user
 
   return (
-    <div dir={dir} className="flex min-h-screen flex-col bg-zinc-950 text-zinc-100">
+    <div dir={dir} className="flex min-h-screen flex-col bg-zinc-950 text-zinc-100 overflow-x-hidden">
       <Navbar isAuthenticated={isAuthenticated} />
       <main className="flex-1">{children}</main>
       <Footer />

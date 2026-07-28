@@ -62,20 +62,20 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
             </Link>
           ))}
 
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild>
-              <button className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-zinc-400 transition-colors hover:text-zinc-100 hover:bg-zinc-800/50">
-                <Globe size={16} />
-                <span className="uppercase">{locale}</span>
-                <ChevronDown size={14} />
-              </button>
-            </DropdownMenu.Trigger>
+          <div className="relative">
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-zinc-400 transition-colors hover:text-zinc-100 hover:bg-zinc-800/50">
+                  <Globe size={16} />
+                  <span className="uppercase">{locale}</span>
+                  <ChevronDown size={14} />
+                </button>
+              </DropdownMenu.Trigger>
 
-            <DropdownMenu.Portal>
               <DropdownMenu.Content
                 align="end"
                 sideOffset={8}
-                className="z-50 min-w-[140px] rounded-xl border border-zinc-800 bg-zinc-900 p-1.5 shadow-2xl"
+                className={`absolute top-full mt-2 z-50 min-w-[140px] rounded-xl border border-zinc-800 bg-zinc-900 p-1.5 shadow-2xl ${isRtl ? 'left-0' : 'right-0'}`}
               >
                 {locales.map((l) => (
                   <DropdownMenu.Item asChild key={l.code}>
@@ -88,8 +88,8 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
                   </DropdownMenu.Item>
                 ))}
               </DropdownMenu.Content>
-            </DropdownMenu.Portal>
-          </DropdownMenu.Root>
+            </DropdownMenu.Root>
+          </div>
 
           {isAuthenticated ? (
             <div className="flex items-center gap-2">
