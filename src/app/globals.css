@@ -22,6 +22,11 @@ body {
   scrollbar-color: #27272a transparent;
 }
 
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
 ::selection {
   background: #27272a;
   color: #f4f4f5;

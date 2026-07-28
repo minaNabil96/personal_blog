@@ -80,24 +80,22 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
               </button>
             </DropdownMenu.Trigger>
 
-            <DropdownMenu.Portal>
-              <DropdownMenu.Content
-                align="end"
-                sideOffset={8}
-                className="z-50 min-w-[140px] rounded-xl border border-zinc-800 bg-zinc-900 p-1.5 shadow-2xl"
-              >
-                {locales.map((l) => (
-                  <DropdownMenu.Item asChild key={l.code}>
-                    <Link
-                      href={`/${l.code}`}
-                      className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-zinc-100"
-                    >
-                      {l.label}
-                    </Link>
-                  </DropdownMenu.Item>
-                ))}
-              </DropdownMenu.Content>
-            </DropdownMenu.Portal>
+            <DropdownMenu.Content
+              align="end"
+              sideOffset={8}
+              className="z-50 min-w-[140px] rounded-xl border border-zinc-800 bg-zinc-900 p-1.5 shadow-2xl"
+            >
+              {locales.map((l) => (
+                <DropdownMenu.Item asChild key={l.code}>
+                  <Link
+                    href={`/${l.code}`}
+                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-zinc-100"
+                  >
+                    {l.label}
+                  </Link>
+                </DropdownMenu.Item>
+              ))}
+            </DropdownMenu.Content>
           </DropdownMenu.Root>
 
           {isAuthenticated ? (
