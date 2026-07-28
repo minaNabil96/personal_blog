@@ -125,9 +125,16 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
     setUploading(true)
     try {
       const ext = file.name.split('.').pop() || 'png'
-      const fileName = `${crypto.randomUUID()}.${ext}`
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`
 
       const supabase = createClient()
+
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        addToast('You must be logged in to upload images', 'error')
+        return
+      }
+
       const { data, error } = await supabase.storage
         .from('blog-images')
         .upload(fileName, file, { cacheControl: '3600', upsert: false })
@@ -142,7 +149,7 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
         .getPublicUrl(data.path)
 
       setValue('cover_image', publicUrl)
-      addToast('Image uploaded successfully', 'success')
+      addToast('Image uploaded', 'success')
     } catch (err) {
       addToast('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'), 'error')
     } finally {
