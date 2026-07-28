@@ -51,8 +51,8 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
   }
 
   return (
-    <header className="fixed inset-bs-0 inset-i-0 z-50 flex h-16 items-center justify-center">
-      <nav className="flex w-full items-center justify-between border-b border-zinc-800/50 bg-zinc-900/40 px-4 py-3 backdrop-blur-xl sm:px-6">
+    <header className="fixed left-0 right-0 top-0 z-50 flex h-16 w-full bg-zinc-900/80 backdrop-blur-xl">
+      <nav className="flex w-full items-center justify-between border-b border-zinc-800/50 px-4 sm:px-6">
         <Link
           href={`/${locale}`}
           className="text-lg font-bold text-zinc-100 hover:text-white transition-colors"
@@ -153,7 +153,7 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: slideFrom, opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className={`fixed inset-bs-16 ${isRtl ? 'inset-is-0' : 'inset-ie-0'} z-40 w-72 max-w-[85vw] me-4`}
+              className={`fixed top-16 z-40 w-72 max-w-[85vw] ${isRtl ? 'left-4' : 'right-4'}`}
             >
               <div className="h-full rounded-2xl border border-zinc-800/50 bg-zinc-900/95 p-4 backdrop-blur-xl shadow-xl overflow-y-auto">
                 {navLinks.map((link) => (
