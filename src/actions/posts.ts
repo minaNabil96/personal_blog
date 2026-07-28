@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/server'
 const LOCALE_KEYS = ['ar', 'en', 'ru'] as const
 
 const translationSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
+  title: z.string().optional().default(''),
   description: z.string().optional().default(''),
   content: z.string().optional().default(''),
 })

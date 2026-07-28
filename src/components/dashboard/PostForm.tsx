@@ -18,24 +18,24 @@ import { useToast } from '@/components/ui/toast'
 const LOCALES = ['ar', 'en', 'ru'] as const
 
 const postFormSchema = z.object({
-  slug: z.string().min(1).regex(/^[a-z0-9-]+$/),
-  cover_image: z.string().optional(),
+  slug: z.string().default(''),
+  cover_image: z.string().default(''),
   category: z.enum(['technology', 'project']),
   published: z.boolean(),
-  'translations.ar.title': z.string().min(1),
-  'translations.ar.description': z.string().optional(),
-  'translations.ar.content': z.string().optional(),
-  'translations.en.title': z.string().min(1),
-  'translations.en.description': z.string().optional(),
-  'translations.en.content': z.string().optional(),
-  'translations.ru.title': z.string().min(1),
-  'translations.ru.description': z.string().optional(),
-  'translations.ru.content': z.string().optional(),
-  github_url: z.string().optional(),
-  live_demo_url: z.string().optional(),
+  'translations.ar.title': z.string().default(''),
+  'translations.ar.description': z.string().default(''),
+  'translations.ar.content': z.string().default(''),
+  'translations.en.title': z.string().default(''),
+  'translations.en.description': z.string().default(''),
+  'translations.en.content': z.string().default(''),
+  'translations.ru.title': z.string().default(''),
+  'translations.ru.description': z.string().default(''),
+  'translations.ru.content': z.string().default(''),
+  github_url: z.string().default(''),
+  live_demo_url: z.string().default(''),
 })
 
-type PostFormValues = z.infer<typeof postFormSchema>
+type PostFormValues = z.input<typeof postFormSchema>
 
 type PostEditData = {
   id: string
@@ -173,15 +173,28 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
   const onSubmit = async (data: PostFormValues) => {
     setSubmitting(true)
     try {
+      const titles = [data['translations.ar.title'], data['translations.en.title'], data['translations.ru.title']]
+      const nonEmptyTitles = titles.filter(t => t?.trim())
+      if (nonEmptyTitles.length === 0) {
+        addToast('At least one title is required', 'error')
+        setSubmitting(false)
+        return
+      }
+
+      let slug = data.slug?.trim()
+      if (!slug) {
+        slug = nonEmptyTitles[0]!.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+      }
+
       const formData = new FormData()
       
       const setField = (key: string, value: unknown) => {
-        if (value !== undefined && value !== null) {
+        if (value !== undefined && value !== null && value !== '') {
           formData.append(key, typeof value === 'boolean' ? String(value) : String(value))
         }
       }
       
-      setField('slug', data.slug)
+      setField('slug', slug)
       setField('cover_image', data.cover_image)
       setField('category', data.category)
       setField('published', data.published)
