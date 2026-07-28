@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { randomUUID } from 'crypto'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export const maxDuration = 30
 
@@ -19,8 +20,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File too large (max 5MB)' }, { status: 400 })
+    if (file.size > 4 * 1024 * 1024) {
+      return NextResponse.json({ error: 'File too large (max 4MB)' }, { status: 400 })
     }
 
     if (!file.type.startsWith('image/')) {
@@ -30,7 +31,8 @@ export async function POST(request: NextRequest) {
     const ext = file.name.split('.').pop() || 'png'
     const fileName = `${randomUUID()}.${ext}`
 
-    const { data, error } = await supabase.storage
+    const admin = createAdminClient()
+    const { data, error } = await admin.storage
       .from('blog-images')
       .upload(fileName, file, { cacheControl: '3600', upsert: false })
 
@@ -38,7 +40,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    const { data: { publicUrl } } = supabase.storage
+    const { data: { publicUrl } } = admin.storage
       .from('blog-images')
       .getPublicUrl(data.path)
 

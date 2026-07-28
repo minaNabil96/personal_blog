@@ -14,7 +14,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { createPost, updatePost } from '@/actions/posts'
 import { useToast } from '@/components/ui/toast'
-import { createClient } from '@/lib/supabase/client'
 
 const LOCALES = ['ar', 'en', 'ru'] as const
 
@@ -112,8 +111,8 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
     const file = e.target.files?.[0]
     if (!file) return
 
-    if (file.size > 5 * 1024 * 1024) {
-      addToast('Image must be under 5MB', 'error')
+    if (file.size > 4 * 1024 * 1024) {
+      addToast('Image must be under 4MB', 'error')
       return
     }
 
@@ -124,34 +123,36 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
 
     setUploading(true)
     try {
-      const ext = file.name.split('.').pop() || 'png'
-      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${ext}`
+      const formData = new FormData()
+      formData.append('file', file)
 
-      const supabase = createClient()
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 15000)
 
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        addToast('You must be logged in to upload images', 'error')
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+        signal: controller.signal,
+      })
+      clearTimeout(timeout)
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        addToast(data.error || 'Upload failed', 'error')
         return
       }
 
-      const { data, error } = await supabase.storage
-        .from('blog-images')
-        .upload(fileName, file, { cacheControl: '3600', upsert: false })
-
-      if (error) {
-        addToast(error.message, 'error')
-        return
+      if (data.url) {
+        setValue('cover_image', data.url)
+        addToast('Image uploaded', 'success')
       }
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('blog-images')
-        .getPublicUrl(data.path)
-
-      setValue('cover_image', publicUrl)
-      addToast('Image uploaded', 'success')
     } catch (err) {
-      addToast('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'), 'error')
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        addToast('Upload timed out. Try a smaller image.', 'error')
+      } else {
+        addToast('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'), 'error')
+      }
     } finally {
       setUploading(false)
     }
