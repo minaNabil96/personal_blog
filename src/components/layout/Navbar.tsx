@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Menu, X, Globe, ChevronDown, LayoutDashboard, LogOut } from 'lucide-react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { logout } from '@/actions/auth'
@@ -42,8 +42,8 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
   }
 
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 flex h-16 w-full bg-zinc-900/95">
-      <nav className="flex w-full items-center justify-between border-b border-zinc-800/50 bg-zinc-900/60 backdrop-blur-xl px-4 sm:px-6">
+    <header className="fixed left-0 right-0 top-0 z-50 flex h-16 w-full border-b border-zinc-800/50 bg-zinc-900/95">
+      <nav className="flex w-full items-center justify-between px-4 sm:px-6">
         <Link
           href={`/${locale}`}
           className="text-lg font-bold text-zinc-100 hover:text-white transition-colors"
@@ -129,23 +129,15 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
         </button>
       </nav>
 
-      <AnimatePresence>
-        {mobileOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40 bg-black/60"
-              onClick={() => setMobileOpen(false)}
-            />
-            <motion.div
-              initial={{ x: slideFrom, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: slideFrom, opacity: 0 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className={`fixed top-16 z-40 w-72 max-w-[85vw] ${isRtl ? 'left-4' : 'right-4'}`}
-            >
+      {mobileOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/60"
+            onClick={() => setMobileOpen(false)}
+          />
+          <div
+            className={`fixed top-16 z-40 w-72 max-w-[85vw] rounded-2xl border border-zinc-800/50 bg-zinc-900/95 backdrop-blur-xl shadow-xl ${isRtl ? 'left-4' : 'right-4'}`}
+          >
               <div className="h-full rounded-2xl border border-zinc-800/50 bg-zinc-900/95 p-4 backdrop-blur-xl shadow-xl overflow-y-auto">
                 {navLinks.map((link) => (
                   <Link
@@ -203,10 +195,9 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
                   </Link>
                 )}
               </div>
-            </motion.div>
+            </div>
           </>
         )}
-      </AnimatePresence>
     </header>
   )
 }
