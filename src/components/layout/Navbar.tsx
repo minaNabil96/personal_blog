@@ -29,15 +29,6 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
   const slideFrom = isRtl ? -100 : 100
 
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
-    return () => { document.body.style.overflow = '' }
-  }, [mobileOpen])
-
-  useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) setMobileOpen(false)
     }
@@ -51,8 +42,8 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
   }
 
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 flex h-16 w-full bg-zinc-900/80 backdrop-blur-xl">
-      <nav className="flex w-full items-center justify-between border-b border-zinc-800/50 px-4 sm:px-6">
+    <header className="fixed left-0 right-0 top-0 z-50 flex h-16 w-full bg-zinc-900/95">
+      <nav className="flex w-full items-center justify-between border-b border-zinc-800/50 bg-zinc-900/60 backdrop-blur-xl px-4 sm:px-6">
         <Link
           href={`/${locale}`}
           className="text-lg font-bold text-zinc-100 hover:text-white transition-colors"
@@ -80,22 +71,24 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
               </button>
             </DropdownMenu.Trigger>
 
-            <DropdownMenu.Content
-              align="end"
-              sideOffset={8}
-              className="z-50 min-w-[140px] rounded-xl border border-zinc-800 bg-zinc-900 p-1.5 shadow-2xl"
-            >
-              {locales.map((l) => (
-                <DropdownMenu.Item asChild key={l.code}>
-                  <Link
-                    href={`/${l.code}`}
-                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-zinc-100"
-                  >
-                    {l.label}
-                  </Link>
-                </DropdownMenu.Item>
-              ))}
-            </DropdownMenu.Content>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content
+                align="end"
+                sideOffset={8}
+                className="z-50 min-w-[140px] rounded-xl border border-zinc-800 bg-zinc-900 p-1.5 shadow-2xl"
+              >
+                {locales.map((l) => (
+                  <DropdownMenu.Item asChild key={l.code}>
+                    <Link
+                      href={`/${l.code}`}
+                      className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-zinc-100"
+                    >
+                      {l.label}
+                    </Link>
+                  </DropdownMenu.Item>
+                ))}
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
           </DropdownMenu.Root>
 
           {isAuthenticated ? (
