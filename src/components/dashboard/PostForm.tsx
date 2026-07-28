@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { createPost, updatePost } from '@/actions/posts'
 import { useToast } from '@/components/ui/toast'
+import { BlogEditor } from '@/components/dashboard/BlogEditor'
 
 const LOCALES = ['ar', 'en', 'ru'] as const
 
@@ -348,11 +349,11 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
                 <label className="mb-1.5 block text-sm font-medium text-zinc-300">
                   Content (Markdown) ({localeLabels[l]})
                 </label>
-                <textarea
-                  {...register(`translations.${l}.content` as keyof PostFormValues)}
-                  rows={16}
-                  placeholder="Write your content in Markdown..."
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-950/50 px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono leading-relaxed resize-y min-h-[300px]"
+                <BlogEditor
+                  value={watch(`translations.${l}.content` as any) || ''}
+                  onChange={(v) => setValue(`translations.${l}.content` as any, v, { shouldDirty: true })}
+                  locale={l}
+                  draftKey={post ? `edit:${post.id}:${l}` : `new:${locale}:${l}`}
                 />
               </div>
             </Tabs.Content>
