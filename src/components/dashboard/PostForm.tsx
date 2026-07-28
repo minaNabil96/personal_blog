@@ -22,15 +22,11 @@ const postFormSchema = z.object({
   cover_image: z.string().default(''),
   category: z.enum(['technology', 'project']),
   published: z.boolean(),
-  'translations.ar.title': z.string().default(''),
-  'translations.ar.description': z.string().default(''),
-  'translations.ar.content': z.string().default(''),
-  'translations.en.title': z.string().default(''),
-  'translations.en.description': z.string().default(''),
-  'translations.en.content': z.string().default(''),
-  'translations.ru.title': z.string().default(''),
-  'translations.ru.description': z.string().default(''),
-  'translations.ru.content': z.string().default(''),
+  translations: z.object({
+    ar: z.object({ title: z.string().default(''), description: z.string().default(''), content: z.string().default('') }),
+    en: z.object({ title: z.string().default(''), description: z.string().default(''), content: z.string().default('') }),
+    ru: z.object({ title: z.string().default(''), description: z.string().default(''), content: z.string().default('') }),
+  }),
   github_url: z.string().default(''),
   live_demo_url: z.string().default(''),
 })
@@ -84,15 +80,23 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
       cover_image: post?.cover_image || '',
       category: (post?.category as 'technology' | 'project') || 'technology',
       published: post?.published || false,
-      'translations.ar.title': post?.post_translations?.find(t => t.language === 'ar')?.title || '',
-      'translations.ar.description': post?.post_translations?.find(t => t.language === 'ar')?.description || '',
-      'translations.ar.content': post?.post_translations?.find(t => t.language === 'ar')?.content || '',
-      'translations.en.title': post?.post_translations?.find(t => t.language === 'en')?.title || '',
-      'translations.en.description': post?.post_translations?.find(t => t.language === 'en')?.description || '',
-      'translations.en.content': post?.post_translations?.find(t => t.language === 'en')?.content || '',
-      'translations.ru.title': post?.post_translations?.find(t => t.language === 'ru')?.title || '',
-      'translations.ru.description': post?.post_translations?.find(t => t.language === 'ru')?.description || '',
-      'translations.ru.content': post?.post_translations?.find(t => t.language === 'ru')?.content || '',
+      translations: {
+        ar: {
+          title: post?.post_translations?.find(t => t.language === 'ar')?.title || '',
+          description: post?.post_translations?.find(t => t.language === 'ar')?.description || '',
+          content: post?.post_translations?.find(t => t.language === 'ar')?.content || '',
+        },
+        en: {
+          title: post?.post_translations?.find(t => t.language === 'en')?.title || '',
+          description: post?.post_translations?.find(t => t.language === 'en')?.description || '',
+          content: post?.post_translations?.find(t => t.language === 'en')?.content || '',
+        },
+        ru: {
+          title: post?.post_translations?.find(t => t.language === 'ru')?.title || '',
+          description: post?.post_translations?.find(t => t.language === 'ru')?.description || '',
+          content: post?.post_translations?.find(t => t.language === 'ru')?.content || '',
+        },
+      },
       github_url: post?.projects_meta?.github_url || '',
       live_demo_url: post?.projects_meta?.live_demo_url || '',
     },
@@ -173,7 +177,8 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
   const onSubmit = async (data: PostFormValues) => {
     setSubmitting(true)
     try {
-      const titles = [data['translations.ar.title'], data['translations.en.title'], data['translations.ru.title']]
+      const t = data.translations
+      const titles = [t.ar.title, t.en.title, t.ru.title]
       const nonEmptyTitles = titles.filter(t => t?.trim())
       if (nonEmptyTitles.length === 0) {
         addToast('At least one title is required', 'error')
@@ -198,15 +203,15 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
       setField('cover_image', data.cover_image)
       setField('category', data.category)
       setField('published', data.published)
-      setField('translations.ar.title', data['translations.ar.title'])
-      setField('translations.ar.description', data['translations.ar.description'])
-      setField('translations.ar.content', data['translations.ar.content'])
-      setField('translations.en.title', data['translations.en.title'])
-      setField('translations.en.description', data['translations.en.description'])
-      setField('translations.en.content', data['translations.en.content'])
-      setField('translations.ru.title', data['translations.ru.title'])
-      setField('translations.ru.description', data['translations.ru.description'])
-      setField('translations.ru.content', data['translations.ru.content'])
+      setField('translations.ar.title', t.ar.title)
+      setField('translations.ar.description', t.ar.description)
+      setField('translations.ar.content', t.ar.content)
+      setField('translations.en.title', t.en.title)
+      setField('translations.en.description', t.en.description)
+      setField('translations.en.content', t.en.content)
+      setField('translations.ru.title', t.ru.title)
+      setField('translations.ru.description', t.ru.description)
+      setField('translations.ru.content', t.ru.content)
       setField('github_url', data.github_url)
       setField('live_demo_url', data.live_demo_url)
       setField('locale', locale)
@@ -319,7 +324,7 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
               <Input
                 label={`Title (${localeLabels[l]})`}
                 placeholder="Enter title..."
-                error={errors[`translations.${l}.title` as keyof typeof errors]?.message as string}
+                error={(errors.translations as any)?.[l]?.title?.message as string}
                 {...register(`translations.${l}.title` as keyof PostFormValues, {
                   onChange: (e) => {
                     if (l === 'en') generateSlug(e.target.value)
