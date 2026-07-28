@@ -9,7 +9,7 @@ import dayjs from 'dayjs'
 import { ArrowRight, ArrowLeft, Calendar, User } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { CodeBlock } from '@/components/blog/CodeBlock'
-import { MermaidBlock } from '@/components/blog/MermaidBlock'
+import { DiagramBlock } from '@/components/blog/DiagramBlock'
 import { ProseImage } from '@/components/blog/ProseImage'
 import type { Components } from 'react-markdown'
 import type { ReactNode } from 'react'
@@ -53,8 +53,8 @@ const components: Partial<Components> = {
       return <code className={className} {...props}>{children}</code>
     }
 
-    if (lang === 'mermaid') {
-      return <MermaidBlock chart={code} />
+    if (lang === 'mermaid' || lang === 'dot' || lang === 'graphviz' || lang === 'plantuml' || lang === 'puml') {
+      return <DiagramBlock lang={lang} code={code} />
     }
 
     return <CodeBlock className={className}>{code}</CodeBlock>
