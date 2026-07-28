@@ -79,7 +79,7 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
       slug: post?.slug || '',
       cover_image: post?.cover_image || '',
       category: (post?.category as 'technology' | 'project') || 'technology',
-      published: post?.published || false,
+      published: post ? post.published : true,
       translations: {
         ar: {
           title: post?.post_translations?.find(t => t.language === 'ar')?.title || '',
@@ -368,7 +368,8 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
             <img
               src={coverImage}
               alt="Cover"
-              className="w-full max-h-64 rounded-xl object-cover"
+              className="w-full rounded-xl object-contain bg-zinc-950/50"
+              style={{ maxHeight: '70vh' }}
               onError={(e) => {
                 (e.target as HTMLImageElement).src = ''
                 setValue('cover_image', '')
