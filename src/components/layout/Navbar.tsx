@@ -39,7 +39,7 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
           href={`/${locale}`}
           className="text-lg font-bold text-zinc-100 hover:text-white transition-colors"
         >
-          Personal Blog
+          Mina&apos;s tech
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">

@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="border-t border-zinc-800/50 bg-zinc-950">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 py-10 md:flex-row">
         <p className="text-sm text-zinc-500">
-          &copy; {new Date().getFullYear()} Personal Blog.{' '}
+          &copy; {new Date().getFullYear()} Mina&apos;s tech.{' '}
           <span className="text-zinc-600">Built with Next.js &amp; Supabase.</span>
         </p>
 

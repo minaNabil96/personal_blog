@@ -4,34 +4,55 @@ import BlogList from '@/components/blog/BlogList'
 
 type Props = {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; q?: string }>
 }
 
-const POSTS_PER_PAGE = 9
+const POSTS_PER_PAGE = 12
 
 export default async function BlogPage({ params, searchParams }: Props) {
   const { locale } = await params
-  const { page } = await searchParams
-  const currentPage = Number(page) || 1
+  const { page, q } = await searchParams
+  const currentPage = Math.max(1, Number(page) || 1)
+  const search = (q || '').trim()
 
   const dict = await getDictionary(locale as 'ar' | 'en' | 'ru')
   const supabase = await createClient()
 
-  const { count } = await supabase
+  let postIds: string[] | undefined
+  if (search) {
+    const { data: matching } = await supabase
+      .from('post_translations')
+      .select('post_id')
+      .ilike('title', `%${search}%`)
+    postIds = matching?.map(p => p.post_id) || []
+    if (postIds.length === 0) {
+      return (
+        <BlogList
+          dictionary={dict}
+          posts={[]}
+          currentPage={1}
+          totalPages={0}
+          search={search}
+          locale={locale}
+        />
+      )
+    }
+  }
+
+  let query = supabase
     .from('posts')
-    .select('*', { count: 'exact', head: true })
-    .eq('category', 'technology')
+    .select('id, slug, cover_image, created_at, post_translations(title, description, language)', { count: 'exact' })
     .eq('published', true)
 
-  const totalPages = Math.ceil((count || 0) / POSTS_PER_PAGE)
+  if (postIds) {
+    query = query.in('id', postIds)
+  }
 
-  const { data: postsRaw } = await supabase
-    .from('posts')
-    .select('id, slug, cover_image, created_at, post_translations(title, description, language)')
-    .eq('category', 'technology')
-    .eq('published', true)
+  const { data: postsRaw, count } = await query
     .order('created_at', { ascending: false })
     .range((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE - 1)
+
+  const totalPages = Math.ceil((count || 0) / POSTS_PER_PAGE)
 
   const posts = (postsRaw || []).map((p) => {
     const t = p.post_translations?.find(pt => pt.language === locale) || p.post_translations?.[0]
@@ -52,6 +73,8 @@ export default async function BlogPage({ params, searchParams }: Props) {
       posts={posts}
       currentPage={currentPage}
       totalPages={totalPages}
+      search={search}
+      locale={locale}
     />
   )
 }

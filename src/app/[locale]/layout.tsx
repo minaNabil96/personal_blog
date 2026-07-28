@@ -12,10 +12,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
   return {
     title: {
-      template: `%s | Personal Blog (${locale})`,
-      default: 'Personal Blog',
+      template: `%s | Mina's tech`,
+      default: "Mina's tech",
     },
-    description: 'A personal blog about web development and design',
+    description: "Mina N. F.'s personal blog about programming, technology, and AI",
   }
 }
 

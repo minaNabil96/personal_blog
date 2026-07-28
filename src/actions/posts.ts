@@ -217,13 +217,23 @@ export async function updatePost(id: string, formData: FormData) {
   }
 }
 
-export async function deletePost(id: string, locale: string = 'ar') {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return
+export async function deletePost(formData: FormData) {
+  try {
+    const id = formData.get('id') as string
+    const locale = formData.get('locale') as string || 'ar'
 
-  const admin = createAdminClient()
-  await admin.from('posts').delete().eq('id', id)
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Unauthorized' }
 
-  revalidatePath(`/${locale}/dashboard/posts`)
+    const admin = createAdminClient()
+    const { error } = await admin.from('posts').delete().eq('id', id)
+    if (error) return { error: error.message }
+
+    revalidatePath(`/${locale}/dashboard/posts`)
+    revalidatePath(`/${locale}/blog`)
+    return { success: true }
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : 'Unknown error' }
+  }
 }

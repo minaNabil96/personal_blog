@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
+import remarkGfm from 'remark-gfm'
 import dayjs from 'dayjs'
 import { ArrowRight, ArrowLeft, Calendar, User } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -91,8 +92,8 @@ export default function ArticleDetail({
           )}
         </div>
 
-        <div className="prose prose-invert prose-zinc max-w-none">
-          <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+        <div className="prose prose-invert prose-zinc max-w-none prose-headings:font-bold prose-headings:text-zinc-100 prose-p:text-zinc-300 prose-p:leading-relaxed prose-a:text-cyan-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-zinc-200 prose-code:text-cyan-300 prose-code:bg-zinc-800/50 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-pre:bg-zinc-900/80 prose-pre:border prose-pre:border-zinc-800/50 prose-pre:rounded-xl prose-pre:overflow-x-auto prose-img:rounded-xl prose-img:my-8 prose-hr:border-zinc-800 prose-blockquote:border-cyan-500/50 prose-blockquote:text-zinc-400 prose-blockquote:not-italic prose-li:text-zinc-300 [&_table]:w-full [&_table]:border-collapse [&_table]:my-6 [&_th]:border [&_th]:border-zinc-700 [&_th]:bg-zinc-800/50 [&_th]:px-4 [&_th]:py-2.5 [&_th]:text-zinc-200 [&_th]:font-semibold [&_th]:text-sm [&_td]:border [&_td]:border-zinc-700 [&_td]:px-4 [&_td]:py-2.5 [&_td]:text-sm [&_td]:text-zinc-300 [&_tr:last-child_td]:border-b-0">
+          <ReactMarkdown rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
             {post.content}
           </ReactMarkdown>
         </div>

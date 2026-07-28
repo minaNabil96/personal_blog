@@ -6,8 +6,8 @@ import './globals.css'
 import Providers from '@/components/providers'
 
 export const metadata: Metadata = {
-  title: 'Personal Blog',
-  description: 'A personal blog about web development and design',
+  title: "Mina's tech",
+  description: "Mina N. F.'s personal blog about programming, technology, and AI",
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
