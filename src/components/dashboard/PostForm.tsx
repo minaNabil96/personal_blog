@@ -67,6 +67,7 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
   const { addToast } = useToast()
   const [activeTab, setActiveTab] = useState(locale)
   const [uploading, setUploading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [techStack, setTechStack] = useState<string[]>(post?.projects_meta?.tech_stack || [])
   const [techInput, setTechInput] = useState('')
 
@@ -75,7 +76,7 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
     handleSubmit,
     setValue,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<PostFormValues>({
     resolver: zodResolver(postFormSchema),
     defaultValues: {
@@ -170,61 +171,63 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
   }
 
   const onSubmit = async (data: PostFormValues) => {
-    const formData = new FormData()
-    
-    const setField = (key: string, value: unknown) => {
-      if (value !== undefined && value !== null) {
-        if (typeof value === 'boolean') {
-          formData.append(key, String(value))
-        } else {
-          formData.append(key, String(value))
+    setSubmitting(true)
+    try {
+      const formData = new FormData()
+      
+      const setField = (key: string, value: unknown) => {
+        if (value !== undefined && value !== null) {
+          formData.append(key, typeof value === 'boolean' ? String(value) : String(value))
         }
       }
-    }
-    
-    setField('slug', data.slug)
-    setField('cover_image', data.cover_image)
-    setField('category', data.category)
-    setField('published', data.published)
-    setField('translations.ar.title', data['translations.ar.title'])
-    setField('translations.ar.description', data['translations.ar.description'])
-    setField('translations.ar.content', data['translations.ar.content'])
-    setField('translations.en.title', data['translations.en.title'])
-    setField('translations.en.description', data['translations.en.description'])
-    setField('translations.en.content', data['translations.en.content'])
-    setField('translations.ru.title', data['translations.ru.title'])
-    setField('translations.ru.description', data['translations.ru.description'])
-    setField('translations.ru.content', data['translations.ru.content'])
-    setField('github_url', data.github_url)
-    setField('live_demo_url', data.live_demo_url)
-    setField('locale', locale)
-    
-    techStack.forEach(t => formData.append('tech_stack', t))
+      
+      setField('slug', data.slug)
+      setField('cover_image', data.cover_image)
+      setField('category', data.category)
+      setField('published', data.published)
+      setField('translations.ar.title', data['translations.ar.title'])
+      setField('translations.ar.description', data['translations.ar.description'])
+      setField('translations.ar.content', data['translations.ar.content'])
+      setField('translations.en.title', data['translations.en.title'])
+      setField('translations.en.description', data['translations.en.description'])
+      setField('translations.en.content', data['translations.en.content'])
+      setField('translations.ru.title', data['translations.ru.title'])
+      setField('translations.ru.description', data['translations.ru.description'])
+      setField('translations.ru.content', data['translations.ru.content'])
+      setField('github_url', data.github_url)
+      setField('live_demo_url', data.live_demo_url)
+      setField('locale', locale)
+      
+      techStack.forEach(t => formData.append('tech_stack', t))
 
-    const action = post ? updatePost(post.id, formData) : createPost(formData)
-    const result = await action
+      const action = post ? updatePost(post.id, formData) : createPost(formData)
+      const result = await action
 
-    if (result && 'error' in result && result.error) {
-      addToast(result.error, 'error')
-      return
-    }
+      if (result && 'error' in result && result.error) {
+        addToast(result.error, 'error')
+        return
+      }
 
-    if (result && 'success' in result && result.success) {
-      addToast(
-        post
-          ? (locale === 'ar' ? 'تم تحديث المقالة بنجاح' : locale === 'ru' ? 'Статья обновлена' : 'Post updated successfully')
-          : (locale === 'ar' ? 'تم إنشاء المقالة بنجاح' : locale === 'ru' ? 'Статья создана' : 'Post created successfully'),
-        'success'
-      )
+      if (result && 'success' in result && result.success) {
+        addToast(
+          post
+            ? (locale === 'ar' ? 'تم تحديث المقالة بنجاح' : locale === 'ru' ? 'Статья обновлена' : 'Post updated successfully')
+            : (locale === 'ar' ? 'تم إنشاء المقالة بنجاح' : locale === 'ru' ? 'Статья создана' : 'Post created successfully'),
+          'success'
+        )
 
-      const timeout = setTimeout(() => {
-        if (post) {
-          router.push(`/${result.locale || locale}/dashboard/posts`)
-        } else {
-          router.push(`/${result.locale || locale}/blog/${result.slug}`)
-        }
-        router.refresh()
-      }, 1200)
+        setTimeout(() => {
+          if (post) {
+            router.push(`/${result.locale || locale}/dashboard/posts`)
+          } else {
+            router.push(`/${result.locale || locale}/blog/${result.slug}`)
+          }
+        }, 1500)
+      }
+    } catch (err) {
+      addToast('Error: ' + (err instanceof Error ? err.message : 'Unknown error'), 'error')
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -443,7 +446,7 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
       </AnimatePresence>
 
       <div className="flex items-center justify-end gap-3">
-        <Button type="submit" size="lg" loading={isSubmitting}>
+        <Button type="submit" size="lg" loading={submitting}>
           <Save size={18} />
           {post ? 'Update Post' : 'Create Post'}
         </Button>
