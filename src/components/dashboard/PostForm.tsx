@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { createPost, updatePost } from '@/actions/posts'
 import { useToast } from '@/components/ui/toast'
+import { createClient } from '@/lib/supabase/client'
 
 const LOCALES = ['ar', 'en', 'ru'] as const
 
@@ -111,17 +112,39 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
     const file = e.target.files?.[0]
     if (!file) return
 
+    if (file.size > 5 * 1024 * 1024) {
+      addToast('Image must be under 5MB', 'error')
+      return
+    }
+
+    if (!file.type.startsWith('image/')) {
+      addToast('Only image files are allowed', 'error')
+      return
+    }
+
     setUploading(true)
     try {
-      const formData = new FormData()
-      formData.append('file', file)
-      const res = await fetch('/api/upload', { method: 'POST', body: formData })
-      const data = await res.json()
-      if (data.url) {
-        setValue('cover_image', data.url)
+      const ext = file.name.split('.').pop() || 'png'
+      const fileName = `${crypto.randomUUID()}.${ext}`
+
+      const supabase = createClient()
+      const { data, error } = await supabase.storage
+        .from('blog-images')
+        .upload(fileName, file, { cacheControl: '3600', upsert: false })
+
+      if (error) {
+        addToast(error.message, 'error')
+        return
       }
-    } catch {
-      console.error('Upload failed')
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('blog-images')
+        .getPublicUrl(data.path)
+
+      setValue('cover_image', publicUrl)
+      addToast('Image uploaded successfully', 'success')
+    } catch (err) {
+      addToast('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'), 'error')
     } finally {
       setUploading(false)
     }
@@ -187,7 +210,6 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
       )
 
       const timeout = setTimeout(() => {
-        clearTimeout(timeout)
         if (post) {
           router.push(`/${result.locale || locale}/dashboard/posts`)
         } else {
@@ -274,11 +296,11 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
                 label={`Title (${localeLabels[l]})`}
                 placeholder="Enter title..."
                 error={errors[`translations.${l}.title` as keyof typeof errors]?.message as string}
-                {...register(`translations.${l}.title` as keyof PostFormValues)}
-                onChange={(e) => {
-                  register(`translations.${l}.title` as keyof PostFormValues).onChange(e)
-                  if (l === 'en') generateSlug(e.target.value)
-                }}
+                {...register(`translations.${l}.title` as keyof PostFormValues, {
+                  onChange: (e) => {
+                    if (l === 'en') generateSlug(e.target.value)
+                  }
+                })}
               />
 
               <div>

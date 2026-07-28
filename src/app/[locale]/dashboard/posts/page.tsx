@@ -1,4 +1,5 @@
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
+import Link from 'next/link'
 import { getDictionary } from '@/lib/i18n/dictionaries'
 import { PostsTable } from '@/components/dashboard/PostsTable'
 
@@ -21,13 +22,13 @@ export default async function PostsPage({ params }: { params: Promise<{ locale: 
           <h1 className="text-3xl font-bold text-zinc-100">{dict.dashboard.posts || 'Posts'}</h1>
           <p className="mt-1 text-zinc-400">{dict.dashboard.postsDesc || 'Manage your blog posts'}</p>
         </div>
-        <a
+        <Link
           href={`/${locale}/dashboard/posts/new`}
           className="inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-cyan-700"
         >
           <span className="h-4 w-4" aria-hidden="true">+</span>
           {dict.dashboard.createPost || 'New Post'}
-        </a>
+        </Link>
       </div>
 
       <PostsTable locale={locale} />

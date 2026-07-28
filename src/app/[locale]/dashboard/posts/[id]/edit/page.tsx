@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getDictionary } from '@/lib/i18n/dictionaries'
 import { createAdminClient } from '@/lib/supabase/admin'

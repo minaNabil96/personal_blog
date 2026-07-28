@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const LoginFormSchema = z.object({
-  email: z.email("Invalid email address"),
+  email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
@@ -17,10 +17,11 @@ export const TranslationSchema = z.object({
 export type Translation = z.output<typeof TranslationSchema>;
 
 export const PostSchema = z.object({
+  slug: z.string().min(1, "Slug is required").regex(/^[a-z0-9-]+$/, "Slug must be lowercase alphanumeric with hyphens"),
   cover_image: z.string().url().optional().nullable().default(null),
   tags: z.array(z.string()).optional().default([]),
   published: z.boolean().optional().default(false),
-  category: z.enum(["tech", "design", "life", "tutorial"]).optional(),
+  category: z.enum(["technology", "project"]).optional(),
   translations: z.object({
     ar: TranslationSchema,
     en: TranslationSchema,

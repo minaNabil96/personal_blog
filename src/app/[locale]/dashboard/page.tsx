@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import { getDictionary } from '@/lib/i18n/dictionaries'
 import { DashboardStats } from '@/components/dashboard/DashboardStats'
 import { RecentPosts } from '@/components/dashboard/RecentPosts'

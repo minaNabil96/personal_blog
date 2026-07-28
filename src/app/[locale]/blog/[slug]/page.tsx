@@ -52,7 +52,7 @@ export default async function ArticlePage({ params }: Props) {
     excerpt: translation?.description || '',
     cover_image: post.cover_image || '',
     created_at: post.created_at,
-    author_id: post.author_id,
+    author: '',
     tags: [] as string[],
   }
 
