@@ -91,7 +91,7 @@ export default function ArticleDetail({
   const Arrow = isRtl ? ArrowLeft : ArrowRight
 
   return (
-    <article className="px-6 py-24">
+    <article className="px-4 py-20 sm:px-6 sm:py-24">
       <div className="mx-auto max-w-3xl">
         {post.cover_image && (
           <div className="mb-8 overflow-hidden rounded-2xl">
@@ -117,12 +117,12 @@ export default function ArticleDetail({
             )}
           </div>
 
-          <h1 className="mt-4 text-3xl font-bold text-zinc-100 sm:text-4xl">
+          <h1 className="mt-4 text-2xl font-bold text-zinc-100 sm:text-3xl md:text-4xl">
             {post.title}
           </h1>
         </div>
 
-        <div className="prose prose-invert max-w-none leading-loose">
+        <div className="prose prose-invert max-w-none leading-loose text-justify">
           <ReactMarkdown
             rehypePlugins={[rehypeRaw]}
             remarkPlugins={[remarkGfm]}
@@ -154,7 +154,7 @@ export default function ArticleDetail({
                       <time className="text-xs text-zinc-500">
                         {dayjs(rp.created_at).format('MMM D, YYYY')}
                       </time>
-                      <h3 className="mt-2 text-lg font-semibold text-zinc-100 group-hover:text-white transition-colors">
+                      <h3 className="mt-2 text-base font-semibold text-zinc-100 group-hover:text-white transition-colors sm:text-lg">
                         {rp.title}
                       </h3>
                     </CardContent>

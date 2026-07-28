@@ -85,15 +85,15 @@ export function PostsTable({ locale, posts }: { locale: string; posts: any[] }) 
                     <div className="flex items-center justify-end gap-1">
                       <Link
                         href={`/${locale}/dashboard/posts/${post.id}/edit`}
-                        className="rounded-lg p-2 text-cyan-400 transition-colors hover:bg-zinc-800/50"
+                        className="rounded-lg p-2.5 text-cyan-400 transition-colors hover:bg-zinc-800/50 min-h-[44px] min-w-[44px] flex items-center justify-center"
                       >
-                        <Edit size={16} />
+                        <Edit size={18} />
                       </Link>
                       <button
                         onClick={() => handleDelete(post.id)}
-                        className="rounded-lg p-2 text-red-400 transition-colors hover:bg-zinc-800/50"
+                        className="rounded-lg p-2.5 text-red-400 transition-colors hover:bg-zinc-800/50 min-h-[44px] min-w-[44px] flex items-center justify-center"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={18} />
                       </button>
                     </div>
                   </td>

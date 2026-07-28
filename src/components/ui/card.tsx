@@ -6,7 +6,7 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 export function Card({ glass = false, className = '', children, ...props }: CardProps) {
   const classes = [
-    'rounded-2xl border overflow-hidden',
+    'rounded-2xl border overflow-hidden flex flex-col',
     glass
       ? 'border-zinc-800/50 bg-zinc-900/40 backdrop-blur-xl shadow-xl'
       : 'border-zinc-800 bg-zinc-900',
@@ -30,7 +30,7 @@ export function CardHeader({ className = '', children, ...props }: HTMLAttribute
 
 export function CardContent({ className = '', children, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={`p-6 ${className}`} {...props}>
+    <div className={`p-6 flex-1 ${className}`} {...props}>
       {children}
     </div>
   )

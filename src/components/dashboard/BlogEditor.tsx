@@ -238,7 +238,7 @@ export function BlogEditor({ value, onChange, locale, draftKey }: BlogEditorProp
             <span className="text-xs font-medium text-zinc-400">Markdown Cheatsheet</span>
             <button type="button" onClick={() => setShowCheatsheet(false)} className="text-xs text-zinc-600 hover:text-zinc-400">Close</button>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5 max-h-[40vh] overflow-y-auto">
             {SYNTAX_CHEATSHEET.map(item => (
               <div key={item.label} className="rounded-lg bg-zinc-900/60 px-3 py-1.5 text-xs">
                 <span className="text-zinc-300 font-medium">{item.label}</span>
@@ -253,7 +253,7 @@ export function BlogEditor({ value, onChange, locale, draftKey }: BlogEditorProp
       {/* Dialogs */}
       {showDialogs === 'code' && (
         <Dialog onClose={() => setShowDialogs(null)} title="Insert Code Block">
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {LANGUAGES.map(lang => (
               <button
                 key={lang}
@@ -290,7 +290,7 @@ export function BlogEditor({ value, onChange, locale, draftKey }: BlogEditorProp
       {showDialogs === 'callout' && (
         <Dialog onClose={() => setShowDialogs(null)} title="Insert Callout Box">
           <p className="text-xs text-zinc-500 mb-3">Choose a callout type:</p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {CALLOUT_TYPES.map(type => (
               <button
                 key={type}
@@ -375,7 +375,7 @@ export function BlogEditor({ value, onChange, locale, draftKey }: BlogEditorProp
 
 function Dialog({ children, onClose, title }: { children: React.ReactNode; onClose: () => void; title: string }) {
   return (
-    <div className="border-b border-zinc-800/50 p-4">
+    <div className="border-b border-zinc-800/50 p-4 max-h-[50vh] overflow-y-auto">
       <div className="flex items-center justify-between mb-3">
         <span className="text-sm font-medium text-zinc-200">{title}</span>
         <button type="button" onClick={onClose} className="text-xs text-zinc-600 hover:text-zinc-400">Cancel</button>

@@ -86,48 +86,50 @@ export function DiagramViewer({ children, label }: DiagramViewerProps) {
           onMouseLeave={handleMouseUp}
           style={{ cursor: dragging ? 'grabbing' : 'default' }}
         >
-          <div className="absolute top-4 end-4 flex items-center gap-2 z-10">
-            <span className="text-xs text-zinc-500 bg-black/60 px-2 py-1 rounded">{label}</span>
-            <button
-              onClick={resetView}
-              className="rounded-lg bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
-              aria-label="Reset view"
-            >
-              <RotateCcw size={16} />
-            </button>
-            <button
-              onClick={() => setScale(s => Math.max(0.25, s - 0.25))}
-              className="rounded-lg bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
-              aria-label="Zoom out"
-            >
-              <Minus size={16} />
-            </button>
-            <span className="text-xs text-zinc-400 w-10 text-center tabular-nums">
-              {Math.round(scale * 100)}%
-            </span>
-            <button
-              onClick={() => setScale(s => Math.min(5, s + 0.25))}
-              className="rounded-lg bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
-              aria-label="Zoom in"
-            >
-              <Plus size={16} />
-            </button>
-            <button
-              onClick={() => setOpen(false)}
-              className="rounded-lg bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
-              aria-label="Close"
-            >
-              <X size={16} />
-            </button>
+          <div className="absolute top-4 inset-i-4 md:inset-i-auto md:end-4 flex flex-wrap items-center gap-2 z-10">
+            {label && <span className="text-xs text-zinc-500 bg-black/60 px-2 py-1 rounded">{label}</span>}
+            <div className="flex items-center gap-1.5 bg-black/40 rounded-lg p-1">
+              <button
+                onClick={resetView}
+                className="rounded-lg bg-white/10 p-2 text-white hover:bg-white/20 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Reset view"
+              >
+                <RotateCcw size={18} />
+              </button>
+              <button
+                onClick={() => setScale(s => Math.max(0.25, s - 0.25))}
+                className="rounded-lg bg-white/10 p-2 text-white hover:bg-white/20 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Zoom out"
+              >
+                <Minus size={18} />
+              </button>
+              <span className="text-xs text-zinc-400 w-10 text-center tabular-nums">
+                {Math.round(scale * 100)}%
+              </span>
+              <button
+                onClick={() => setScale(s => Math.min(5, s + 0.25))}
+                className="rounded-lg bg-white/10 p-2 text-white hover:bg-white/20 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Zoom in"
+              >
+                <Plus size={18} />
+              </button>
+              <button
+                onClick={() => setOpen(false)}
+                className="rounded-lg bg-white/10 p-2 text-white hover:bg-white/20 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
           </div>
 
-          <div className="absolute bottom-4 start-1/2 -translate-x-1/2 text-xs text-zinc-600 bg-black/60 px-3 py-1.5 rounded-full pointer-events-none select-none">
+          <div className="absolute bottom-4 start-1/2 -translate-x-1/2 text-xs text-zinc-500 bg-black/70 px-3 py-1.5 rounded-full pointer-events-none select-none whitespace-nowrap">
             Drag to pan &middot; Scroll to zoom
           </div>
 
           <div
             ref={contentRef}
-            className="w-full h-full flex items-center justify-center p-16"
+            className="w-full h-full flex items-center justify-center p-4 md:p-16"
             onWheel={handleWheel}
             onMouseDown={handleMouseDown}
             style={{ cursor: dragging ? 'grabbing' : 'grab' }}

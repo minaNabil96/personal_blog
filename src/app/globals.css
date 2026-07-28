@@ -216,6 +216,23 @@ kbd {
   color: #a1a1aa;
 }
 
+/* Touch target minimum size */
+.min-touch {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Prevent horizontal overflow on the root */
+html {
+  overflow-x: hidden;
+}
+
+/* Body scroll lock helper */
+body.scroll-lock {
+  overflow: hidden;
+  padding-right: var(--scrollbar-width, 0px);
+}
+
 /* Prose overrides for dark theme */
 .prose {
   --tw-prose-body: #d4d4d8;

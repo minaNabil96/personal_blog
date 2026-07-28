@@ -13,7 +13,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full font-['Tajawal',sans-serif]">
+      <body className="min-h-full font-['Tajawal',sans-serif] overflow-x-hidden">
+        <script dangerouslySetInnerHTML={{
+          __html: `document.documentElement.style.setProperty('--scrollbar-width', (window.innerWidth - document.documentElement.clientWidth) + 'px')`
+        }} />
         <Providers>{children}</Providers>
       </body>
     </html>

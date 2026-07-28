@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Menu, X, Globe, ChevronDown, LayoutDashboard, LogOut, User } from 'lucide-react'
+import { Menu, X, Globe, ChevronDown, LayoutDashboard, LogOut } from 'lucide-react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { logout } from '@/actions/auth'
 
@@ -26,6 +26,24 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
   const locale = (params.locale as string) || 'en'
   const [mobileOpen, setMobileOpen] = useState(false)
   const isRtl = locale === 'ar'
+  const slideFrom = isRtl ? -100 : 100
+
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [mobileOpen])
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) setMobileOpen(false)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const handleLogout = async () => {
     await logout()
@@ -34,7 +52,7 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
 
   return (
     <header className="fixed inset-bs-0 inset-i-0 z-50 flex h-16 items-center justify-center">
-      <nav className="mx-4 flex w-full max-w-6xl items-center justify-between rounded-2xl border border-zinc-800/50 bg-zinc-900/40 px-6 py-3 backdrop-blur-xl">
+      <nav className="flex w-full items-center justify-between border-b border-zinc-800/50 bg-zinc-900/40 px-4 py-3 backdrop-blur-xl sm:px-6">
         <Link
           href={`/${locale}`}
           className="text-lg font-bold text-zinc-100 hover:text-white transition-colors"
@@ -113,7 +131,7 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
 
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:text-zinc-100 md:hidden"
+          className="flex items-center justify-center rounded-lg p-2 text-zinc-400 hover:text-zinc-100 md:hidden min-h-[44px] min-w-[44px]"
           aria-label="Toggle menu"
         >
           {mobileOpen ? <X size={22} /> : <Menu size={22} />}
@@ -122,71 +140,80 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
 
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-bs-16 inset-i-0 z-40 mx-4 max-w-6xl"
-          >
-            <div className="mt-2 rounded-2xl border border-zinc-800/50 bg-zinc-900/95 p-4 backdrop-blur-xl shadow-xl">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={`/${locale}/${link.href}`}
-                  onClick={() => setMobileOpen(false)}
-                  className="block rounded-lg px-4 py-3 text-sm text-zinc-400 transition-colors hover:text-zinc-100 hover:bg-zinc-800/50"
-                >
-                  {link.label[locale as keyof typeof link.label] || link.label.en}
-                </Link>
-              ))}
-              <hr className="my-2 border-zinc-800" />
-              <div className="flex items-center gap-2 px-4 py-3">
-                {locales.map((l) => (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-40 bg-black/60"
+              onClick={() => setMobileOpen(false)}
+            />
+            <motion.div
+              initial={{ x: slideFrom, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: slideFrom, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className={`fixed inset-bs-16 ${isRtl ? 'inset-is-0' : 'inset-ie-0'} z-40 w-72 max-w-[85vw] me-4`}
+            >
+              <div className="h-full rounded-2xl border border-zinc-800/50 bg-zinc-900/95 p-4 backdrop-blur-xl shadow-xl overflow-y-auto">
+                {navLinks.map((link) => (
                   <Link
-                    key={l.code}
-                    href={`/${l.code}`}
+                    key={link.href}
+                    href={`/${locale}/${link.href}`}
                     onClick={() => setMobileOpen(false)}
-                    className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
-                      l.code === locale
-                        ? 'bg-zinc-800 text-zinc-100'
-                        : 'text-zinc-500 hover:text-zinc-300'
-                    }`}
+                    className="block rounded-lg px-4 py-3 text-sm text-zinc-400 transition-colors hover:text-zinc-100 hover:bg-zinc-800/50"
                   >
-                    {l.code.toUpperCase()}
+                    {link.label[locale as keyof typeof link.label] || link.label.en}
                   </Link>
                 ))}
-              </div>
-              {isAuthenticated ? (
-                <>
-                  <Link
-                    href={`/${locale}/dashboard`}
-                    onClick={() => setMobileOpen(false)}
-                    className="mt-2 block rounded-lg bg-cyan-600 px-4 py-3 text-center text-sm font-medium text-white"
-                  >
-                    {locale === 'ar' ? 'لوحة التحكم' : locale === 'ru' ? 'Панель' : 'Dashboard'}
-                  </Link>
-                  <form action={handleLogout}>
-                    <button
-                      type="submit"
+                <hr className="my-2 border-zinc-800" />
+                <div className="flex items-center gap-2 px-4 py-3">
+                  {locales.map((l) => (
+                    <Link
+                      key={l.code}
+                      href={`/${l.code}`}
                       onClick={() => setMobileOpen(false)}
-                      className="mt-2 block w-full rounded-lg border border-red-800/50 px-4 py-3 text-center text-sm font-medium text-red-400"
+                      className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
+                        l.code === locale
+                          ? 'bg-zinc-800 text-zinc-100'
+                          : 'text-zinc-500 hover:text-zinc-300'
+                      }`}
                     >
-                      {locale === 'ar' ? 'تسجيل الخروج' : locale === 'ru' ? 'Выйти' : 'Logout'}
-                    </button>
-                  </form>
-                </>
-              ) : (
-                <Link
-                  href={`/${locale}/login`}
-                  onClick={() => setMobileOpen(false)}
-                  className="mt-2 block rounded-lg bg-zinc-100 px-4 py-3 text-center text-sm font-medium text-black"
-                >
-                  {locale === 'ar' ? 'تسجيل الدخول' : locale === 'ru' ? 'Войти' : 'Login'}
-                </Link>
-              )}
-            </div>
-          </motion.div>
+                      {l.code.toUpperCase()}
+                    </Link>
+                  ))}
+                </div>
+                {isAuthenticated ? (
+                  <>
+                    <Link
+                      href={`/${locale}/dashboard`}
+                      onClick={() => setMobileOpen(false)}
+                      className="mt-2 block rounded-lg bg-cyan-600 px-4 py-3 text-center text-sm font-medium text-white min-h-[44px] flex items-center justify-center"
+                    >
+                      {locale === 'ar' ? 'لوحة التحكم' : locale === 'ru' ? 'Панель' : 'Dashboard'}
+                    </Link>
+                    <form action={handleLogout}>
+                      <button
+                        type="submit"
+                        onClick={() => setMobileOpen(false)}
+                        className="mt-2 block w-full rounded-lg border border-red-800/50 px-4 py-3 text-center text-sm font-medium text-red-400 min-h-[44px]"
+                      >
+                        {locale === 'ar' ? 'تسجيل الخروج' : locale === 'ru' ? 'Выйти' : 'Logout'}
+                      </button>
+                    </form>
+                  </>
+                ) : (
+                  <Link
+                    href={`/${locale}/login`}
+                    onClick={() => setMobileOpen(false)}
+                    className="mt-2 block rounded-lg bg-zinc-100 px-4 py-3 text-center text-sm font-medium text-black min-h-[44px] flex items-center justify-center"
+                  >
+                    {locale === 'ar' ? 'تسجيل الدخول' : locale === 'ru' ? 'Войти' : 'Login'}
+                  </Link>
+                )}
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </header>
