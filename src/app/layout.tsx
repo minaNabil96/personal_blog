@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className="h-full antialiased overflow-y-scroll">
-      <body className="min-h-full font-['Tajawal',sans-serif]">
+    <html lang="en" className="antialiased overflow-y-scroll">
+      <body className="min-h-screen font-['Tajawal',sans-serif]">
         <Providers>{children}</Providers>
       </body>
     </html>

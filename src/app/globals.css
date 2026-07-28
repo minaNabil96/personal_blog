@@ -222,10 +222,7 @@ kbd {
   min-width: 44px;
 }
 
-/* Prevent horizontal overflow on the root */
-html {
-  overflow-x: hidden;
-}
+
 
 /* Body scroll lock helper */
 body.scroll-lock {
