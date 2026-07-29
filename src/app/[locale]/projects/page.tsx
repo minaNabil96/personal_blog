@@ -24,20 +24,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: 'A collection of my projects and open-source work',
       images: [
         {
-          url: '/a_png_logo_for_tech_an.png',
+          url: '/og-landing.svg',
           width: 1200,
           height: 630,
           alt: 'Projects | Mina&apos;s tech',
         },
       ],
     },
-    twitter: {
+twitter: {
       card: 'summary_large_image',
       site: '@minas_tech',
       creator: '@minas_tech',
       title: 'Projects | Mina&apos;s tech',
       description: 'A collection of my projects and open-source work',
-      images: ['/a_png_logo_for_tech_an.png'],
+      images: ['/og-landing.svg'],
     },
   }
 }

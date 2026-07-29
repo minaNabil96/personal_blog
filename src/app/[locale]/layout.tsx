@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: "Mina N. F.'s personal blog about programming, technology, and AI",
       images: [
         {
-          url: '/a_png_logo_for_tech_an.png',
+          url: '/og-landing.svg',
           width: 1200,
           height: 630,
           alt: "Mina's tech",
@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       creator: '@minas_tech',
       title: "Mina's tech",
       description: "Mina N. F.'s personal blog about programming, technology, and AI",
-      images: ['/a_png_logo_for_tech_an.png'],
+      images: ['/og-landing.svg'],
     },
     robots: {
       index: true,

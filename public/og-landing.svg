@@ -1,0 +1,48 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#09090b"/>
+      <stop offset="50%" style="stop-color:#18181b"/>
+      <stop offset="100%" style="stop-color:#09090b"/>
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#06b6d4"/>
+      <stop offset="100%" style="stop-color:#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="logoGradient" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Subtle grid pattern -->
+  <g opacity="0.03">
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="white" stroke-width="1"/>
+    </pattern>
+    <rect width="1200" height="630" fill="url(#grid)"/>
+  </g>
+  
+  <!-- Decorative circles -->
+  <circle cx="1000" cy="150" r="200" fill="url(#accentGradient)" opacity="0.1"/>
+  <circle cx="200" cy="500" r="150" fill="#3b82f6" opacity="0.08"/>
+  <circle cx="1100" cy="550" r="100" fill="#06b6d4" opacity="0.06"/>
+  
+  <!-- Logo (centered) -->
+  <g transform="translate(600, 200)">
+    <rect x="-100" y="-100" width="200" height="200" rx="40" fill="url(#logoGradient)"/>
+    <path d="M-30 30V-30C-30 -52.2091 -12.2091 -70 10 -70H70C92.2091 -70 110 -52.2091 110 -30V30C110 52.2091 92.2091 70 70 70H10C-12.2091 70 -30 52.2091 -30 30Z" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M-20 10H70M30 -30V50" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="20" cy="10" r="8" fill="white" opacity="0.2" />
+  </g>
+  
+  <!-- Title -->
+  <text x="600" y="450" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="700" fill="white">Mina&apos;s tech</text>
+  <text x="600" y="520" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#71717a">Programming, Technology & AI</text>
+  
+  <!-- Bottom accent line -->
+  <g transform="translate(600, 570)">
+    <rect x="-150" y="-3" width="300" height="6" rx="3" fill="url(#accentGradient)" opacity="0.6"/>
+  </g>
+</svg>
