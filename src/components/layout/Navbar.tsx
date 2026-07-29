@@ -22,29 +22,34 @@ const navLinks = [
 function Logo() {
   return (
     <svg
-      width="32"
-      height="32"
       viewBox="0 0 32 32"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+      className="h-8 w-8"
       aria-hidden="true"
-      className="text-cyan-400"
     >
-      <rect width="32" height="32" rx="8" fill="currentColor" opacity="0.15" />
+      <defs>
+        <linearGradient id="logoGradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#06b6d4" />
+          <stop offset="100%" stopColor="#3b82f6" />
+        </linearGradient>
+      </defs>
+      <rect width="32" height="32" rx="8" fill="url(#logoGradient)" />
       <path
-        d="M8 20V12C8 9.79086 9.79086 8 12 8H20C22.2091 8 24 9.79086 24 12V20C24 22.2091 22.2091 24 20 24H12C9.79086 24 8 22.2091 8 20Z"
-        stroke="currentColor"
+        d="M8 22V10C8 7.79086 9.79086 6 12 6H20C22.2091 6 24 7.79086 24 10V22C24 24.2091 22.2091 26 20 26H12C9.79086 26 8 24.2091 8 22Z"
+        stroke="white"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+      <path
+        d="M10 16H22M16 10V22"
+        stroke="white"
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path
-        d="M12 16H20M16 12V20"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <circle cx="16" cy="16" r="4" fill="white" opacity="0.2" />
     </svg>
   )
 }

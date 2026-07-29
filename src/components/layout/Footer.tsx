@@ -12,7 +12,7 @@ export default function Footer() {
 
         <div className="flex items-center gap-4">
           <Link
-            href="https://t.me/minas_tech"
+            href="https://t.me/+79910141737"
             target="_blank"
             rel="noopener noreferrer"
             className="text-zinc-500 transition-colors hover:text-zinc-300"
