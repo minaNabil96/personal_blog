@@ -3,9 +3,45 @@ import HeroSection from '@/components/home/HeroSection'
 import FeaturedProjects from '@/components/home/FeaturedProjects'
 import LatestArticles from '@/components/home/LatestArticles'
 import { createClient } from '@/lib/supabase/server'
+import type { Metadata } from 'next'
 
 type Props = {
   params: Promise<{ locale: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  const siteUrl = 'https://personalblog-phi-six.vercel.app'
+  
+  return {
+    title: "Mina's tech",
+    description: "Mina N. F.'s personal blog about programming, technology, and AI",
+    metadataBase: new URL(siteUrl),
+    openGraph: {
+      type: 'website',
+      locale,
+      url: `${siteUrl}/${locale}`,
+      siteName: "Mina's tech",
+      title: "Mina's tech",
+      description: "Mina N. F.'s personal blog about programming, technology, and AI",
+      images: [
+        {
+          url: '/a_png_logo_for_tech_an.png',
+          width: 1200,
+          height: 630,
+          alt: "Mina's tech",
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      site: '@minas_tech',
+      creator: '@minas_tech',
+      title: "Mina's tech",
+      description: "Mina N. F.'s personal blog about programming, technology, and AI",
+      images: ['/a_png_logo_for_tech_an.png'],
+    },
+  }
 }
 
 export default async function HomePage({ params }: Props) {

@@ -41,11 +41,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       creator: '@minas_tech',
       title: "Mina's tech",
       description: "Mina N. F.'s personal blog about programming, technology, and AI",
-      images: ['/og-default.png'],
+      images: ['/a_png_logo_for_tech_an.png'],
     },
     robots: {
       index: true,
       follow: true,
+    },
+    icons: {
+      icon: '/a_png_logo_for_tech_an.png',
+      shortcut: '/a_png_logo_for_tech_an.png',
+      apple: '/a_png_logo_for_tech_an.png',
     },
   }
 }

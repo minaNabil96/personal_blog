@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       creator: '@minas_tech',
       title: 'Blog | Mina&apos;s tech',
       description: 'Latest articles about programming, technology, and AI',
-      images: ['/og-default.svg'],
+      images: ['/a_png_logo_for_tech_an.png'],
     },
   }
 }
