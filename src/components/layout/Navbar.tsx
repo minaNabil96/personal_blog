@@ -21,36 +21,12 @@ const navLinks = [
 
 function Logo() {
   return (
-    <svg
-      viewBox="0 0 32 32"
-      fill="none"
-      className="h-8 w-8"
+    <img
+      src="/a_png_logo_for_tech_an.png"
+      alt="Mina's tech"
+      className="h-8 w-8 rounded-lg object-contain"
       aria-hidden="true"
-    >
-      <defs>
-        <linearGradient id="logoGradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#06b6d4" />
-          <stop offset="100%" stopColor="#3b82f6" />
-        </linearGradient>
-      </defs>
-      <rect width="32" height="32" rx="8" fill="url(#logoGradient)" />
-      <path
-        d="M8 22V10C8 7.79086 9.79086 6 12 6H20C22.2091 6 24 7.79086 24 10V22C24 24.2091 22.2091 26 20 26H12C9.79086 26 8 24.2091 8 22Z"
-        stroke="white"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-      <path
-        d="M10 16H22M16 10V22"
-        stroke="white"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="16" cy="16" r="4" fill="white" opacity="0.2" />
-    </svg>
+    />
   )
 }
 

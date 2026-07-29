@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: 'Latest articles about programming, technology, and AI',
       images: [
         {
-          url: '/og-default.svg',
+          url: '/a_png_logo_for_tech_an.png',
           width: 1200,
           height: 630,
           alt: 'Blog | Mina&apos;s tech',

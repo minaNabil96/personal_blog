@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const siteUrl = 'https://personalblog-phi-six.vercel.app'
   const articleUrl = `${siteUrl}/${locale}/blog/${slug}`
-  const ogImage = post.cover_image || '/og-default.svg'
+  const ogImage = post.cover_image || '/a_png_logo_for_tech_an.png'
 
   return {
     title: translation?.title || 'Article',
