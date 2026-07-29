@@ -13,6 +13,7 @@ const POSTS_PER_PAGE = 12
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
   const siteUrl = 'https://personalblog-phi-six.vercel.app'
+  const ogImageUrl = `${siteUrl}/og-landing.svg`
   
   return {
     title: 'Blog',
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: 'Latest articles about programming, technology, and AI',
       images: [
         {
-          url: '/og-landing.svg',
+          url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: 'Blog | Mina&apos;s tech',
@@ -40,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       creator: '@minas_tech',
       title: 'Blog | Mina&apos;s tech',
       description: 'Latest articles about programming, technology, and AI',
-      images: ['/og-landing.svg'],
+      images: [ogImageUrl],
     },
   }
 }
