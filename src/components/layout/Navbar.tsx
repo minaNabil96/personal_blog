@@ -73,8 +73,6 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
               </DropdownMenu.Trigger>
 
               <DropdownMenu.Content
-                align="end"
-                sideOffset={8}
                 className={`absolute top-full mt-2 z-50 min-w-[140px] rounded-xl border border-zinc-800 bg-zinc-900 p-1.5 shadow-2xl ${isRtl ? 'left-0' : 'right-0'}`}
               >
                 {locales.map((l) => (
