@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion } from 'framer-motion'
-import { LogIn } from 'lucide-react'
+import { LogIn, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { login } from '@/actions/auth'
@@ -75,7 +75,10 @@ export default function LoginPage() {
             />
 
             {serverError && (
-              <p className="text-sm text-red-400 text-center">{serverError}</p>
+              <div className="flex items-start gap-3 rounded-lg border border-red-800/50 bg-red-950/40 px-4 py-3 text-sm text-red-400">
+                <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+                <span>{serverError}</span>
+              </div>
             )}
 
             <Button type="submit" size="lg" loading={isSubmitting} className="w-full">

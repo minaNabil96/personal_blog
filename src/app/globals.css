@@ -23,8 +23,7 @@ body {
 }
 
 html {
-  overflow-y: auto;
-  scrollbar-gutter: stable;
+  overflow-y: scroll;
 }
 
 ::selection {
@@ -119,6 +118,43 @@ html {
   line-height: 1.7;
   direction: ltr;
   text-align: left;
+  color: #c9d1d9;
+}
+
+.code-block-content table {
+  border-collapse: collapse;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.code-block-content tr {
+  border: none;
+  background: transparent;
+}
+
+.code-line-number {
+  border: none;
+  color: #636e7e;
+  text-align: right;
+  user-select: none;
+  padding: 0 1rem 0 0;
+  vertical-align: top;
+  font-size: 0.75rem;
+  line-height: inherit;
+  width: 1%;
+  min-width: 2.5rem;
+}
+
+.code-line-code {
+  border: none;
+  padding: 0;
+  white-space: pre;
+}
+
+.code-block-content .hljs {
+  background: transparent;
 }
 
 /* Copy button */

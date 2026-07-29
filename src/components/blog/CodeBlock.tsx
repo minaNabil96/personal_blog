@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { Check, Copy } from 'lucide-react'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/github-dark.css'
 
 interface CodeBlockProps {
   className?: string
@@ -12,15 +14,35 @@ export function CodeBlock({ className, children }: CodeBlockProps) {
   const [copied, setCopied] = useState(false)
   const lang = className?.replace(/^language-/, '') || ''
 
+  const highlighted = useMemo(() => {
+    if (!children) return ''
+    try {
+      if (lang && hljs.getLanguage(lang)) {
+        return hljs.highlight(children, { language: lang }).value
+      }
+      return hljs.highlightAuto(children).value
+    } catch {
+      return children
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+    }
+  }, [children, lang])
+
+  const lines = useMemo(() => {
+    const parts = highlighted.split('\n')
+    if (parts.length > 1 && parts[parts.length - 1] === '') parts.pop()
+    return parts
+  }, [highlighted])
+
+  const showLineNumbers = lines.length > 1
+
   const handleCopy = useCallback(async () => {
     if (!children) return
     await navigator.clipboard.writeText(children)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }, [children])
-
-  const lines = (children || '').split('\n')
-  const showLineNumbers = lines.length > 1
 
   return (
     <div className="code-block-wrapper">
@@ -39,22 +61,18 @@ export function CodeBlock({ className, children }: CodeBlockProps) {
       </div>
       <div className="code-block-content">
         {showLineNumbers ? (
-          <table className="border-none bg-transparent m-0 p-0 w-auto">
+          <table>
             <tbody>
               {lines.map((line, i) => (
-                <tr key={i} className="border-none bg-transparent">
-                  <td className="border-none text-zinc-600 text-right select-none px-4 py-0 text-xs align-top">
-                    {i + 1}
-                  </td>
-                  <td className="border-none p-0 whitespace-pre">
-                    {line || ' '}
-                  </td>
+                <tr key={i}>
+                  <td className="code-line-number">{i + 1}</td>
+                  <td className="code-line-code" dangerouslySetInnerHTML={{ __html: line || ' ' }} />
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <code className={className}>{children}</code>
+          <span className="hljs" dangerouslySetInnerHTML={{ __html: highlighted || ' ' }} />
         )}
       </div>
     </div>

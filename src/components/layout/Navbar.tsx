@@ -1,11 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
+
 import { Menu, X, Globe, ChevronDown, LayoutDashboard, LogOut } from 'lucide-react'
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { logout } from '@/actions/auth'
 
 const locales = [
@@ -25,8 +24,9 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
   const router = useRouter()
   const locale = (params.locale as string) || 'en'
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [langOpen, setLangOpen] = useState(false)
+  const langRef = useRef<HTMLDivElement>(null)
   const isRtl = locale === 'ar'
-  const slideFrom = isRtl ? -100 : 100
 
   useEffect(() => {
     const handleResize = () => {
@@ -35,6 +35,24 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
+  useEffect(() => {
+    if (!langOpen) return
+    const handleClick = (e: MouseEvent) => {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setLangOpen(false)
+      }
+    }
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLangOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    document.addEventListener('keydown', handleKey)
+    return () => {
+      document.removeEventListener('mousedown', handleClick)
+      document.removeEventListener('keydown', handleKey)
+    }
+  }, [langOpen])
 
   const handleLogout = async () => {
     await logout()
@@ -62,31 +80,30 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
             </Link>
           ))}
 
-          <div className="relative">
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger asChild>
-                <button className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-zinc-400 transition-colors hover:text-zinc-100 hover:bg-zinc-800/50">
-                  <Globe size={16} />
-                  <span className="uppercase">{locale}</span>
-                  <ChevronDown size={14} />
-                </button>
-              </DropdownMenu.Trigger>
+          <div className="relative" ref={langRef}>
+            <button
+              onClick={() => setLangOpen(!langOpen)}
+              className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-zinc-400 transition-colors hover:text-zinc-100 hover:bg-zinc-800/50"
+            >
+              <Globe size={16} />
+              <span className="uppercase">{locale}</span>
+              <ChevronDown size={14} />
+            </button>
 
-              <DropdownMenu.Content
-                className={`absolute top-full mt-2 z-50 min-w-[140px] rounded-xl border border-zinc-800 bg-zinc-900 p-1.5 shadow-2xl ${isRtl ? 'left-0' : 'right-0'}`}
-              >
+            {langOpen && (
+              <div className={`absolute top-full mt-2 z-50 min-w-[140px] rounded-xl border border-zinc-800 bg-zinc-900 p-1.5 shadow-2xl ${isRtl ? 'left-0' : 'right-0'}`}>
                 {locales.map((l) => (
-                  <DropdownMenu.Item asChild key={l.code}>
-                    <Link
-                      href={`/${l.code}`}
-                      className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-zinc-100"
-                    >
-                      {l.label}
-                    </Link>
-                  </DropdownMenu.Item>
+                  <Link
+                    key={l.code}
+                    href={`/${l.code}`}
+                    onClick={() => setLangOpen(false)}
+                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-zinc-100"
+                  >
+                    {l.label}
+                  </Link>
                 ))}
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
+              </div>
+            )}
           </div>
 
           {isAuthenticated ? (

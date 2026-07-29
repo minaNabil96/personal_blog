@@ -26,7 +26,16 @@ export async function login(formData: FormData) {
   })
 
   if (error) {
-    return { error: 'Invalid email or password.' }
+    const messages: Record<string, string> = {
+      invalid_credentials: 'Invalid email or password.',
+      email_not_confirmed: 'Please confirm your email before signing in.',
+      user_not_found: 'No account found with this email.',
+      email_exists: 'An account with this email already exists.',
+      weak_password: 'Password is too weak.',
+      over_email_send_rate_limit: 'Too many attempts. Please try again later.',
+      over_request_rate_limit: 'Too many requests. Please wait and try again.',
+    }
+    return { error: messages[error.code ?? ''] || 'Invalid email or password.' }
   }
 
   const locale = formData.get('locale') as string || 'ar'
