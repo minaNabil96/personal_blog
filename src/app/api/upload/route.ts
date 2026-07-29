@@ -24,11 +24,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'File too large (max 4MB)' }, { status: 400 })
     }
 
-    if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ error: 'Only image files are allowed' }, { status: 400 })
+    const ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'avif'] as const
+    const ext = (file.name.split('.').pop() || '').toLowerCase()
+    if (!ALLOWED_EXTENSIONS.includes(ext as typeof ALLOWED_EXTENSIONS[number])) {
+      return NextResponse.json({ error: 'Invalid file extension' }, { status: 400 })
     }
 
-    const ext = file.name.split('.').pop() || 'png'
+    const buffer = await file.arrayBuffer()
+    const bytes = new Uint8Array(buffer.slice(0, 12))
+    const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ')
+
+    const MAGIC: Record<string, string[]> = {
+      png: ['89 50 4e 47'],
+      jpg: ['ff d8 ff'],
+      jpeg: ['ff d8 ff'],
+      gif: ['47 49 46 38'],
+      webp: ['52 49 46 46'],
+      avif: ['00 00 00 20 66 74 79 70'],
+    }
+
+    const magic = MAGIC[ext]
+    if (!magic || !magic.some(p => hex.startsWith(p))) {
+      return NextResponse.json({ error: 'File content does not match extension' }, { status: 400 })
+    }
+
     const fileName = `${randomUUID()}.${ext}`
 
     const admin = createAdminClient()

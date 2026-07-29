@@ -4,15 +4,28 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
+import rehypeSanitize from 'rehype-sanitize'
 import remarkGfm from 'remark-gfm'
+import type { Schema } from 'hast-util-sanitize'
+import { useState, useCallback } from 'react'
 import dayjs from 'dayjs'
-import { ArrowRight, ArrowLeft, Calendar, User } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Calendar, User, Heart } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { CodeBlock } from '@/components/blog/CodeBlock'
 import { DiagramBlock } from '@/components/blog/DiagramBlock'
 import { ProseImage } from '@/components/blog/ProseImage'
 import type { Components } from 'react-markdown'
-import type { ReactNode } from 'react'
+
+const sanitizeSchema: Schema = {
+  attributes: {
+    '*': ['className'],
+    div: ['className', 'itemScope', 'itemType'],
+    span: ['className'],
+    img: ['className', 'loading', 'ariaDescribedBy', 'ariaLabel', 'ariaLabelledBy', 'longDesc', 'src'],
+    code: [['className', /^language-|hljs/]],
+  },
+  strip: ['script'],
+}
 
 interface Post {
   id: string
@@ -23,6 +36,7 @@ interface Post {
   cover_image?: string
   created_at: string
   author?: string
+  author_avatar?: string | null
   tags: string[]
 }
 
@@ -40,6 +54,55 @@ interface ArticleDetailProps {
   }
   post: Post
   relatedPosts: RelatedPost[]
+  loveCount: number
+  userLoved: boolean
+}
+
+function LoveButton({ postId, initialCount, initialLoved }: { postId: string; initialCount: number; initialLoved: boolean }) {
+  const [count, setCount] = useState(initialCount)
+  const [loved, setLoved] = useState(initialLoved)
+  const [loading, setLoading] = useState(false)
+
+  const toggle = useCallback(async () => {
+    if (loading) return
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/love`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId }),
+      })
+      if (!res.ok) throw new Error('Failed')
+      const data = await res.json()
+      setCount(data.count)
+      setLoved(data.loved)
+    } catch {
+      // ignore
+    } finally {
+      setLoading(false)
+    }
+  }, [postId, loading])
+
+  return (
+    <button
+      onClick={toggle}
+      disabled={loading}
+      className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-colors ${
+        loved
+          ? 'bg-red-500/20 border-red-500/50 text-red-400'
+          : 'bg-zinc-800/50 border-zinc-700 text-zinc-400 hover:bg-zinc-700/50 hover:text-zinc-200'
+      }`}
+      aria-pressed={loved}
+      aria-label={loved ? 'Unlike' : 'Like'}
+    >
+      <Heart
+        size={18}
+        className={loved ? 'fill-current' : 'fill-none'}
+        strokeWidth={2}
+      />
+      <span className="text-sm font-medium">{count}</span>
+    </button>
+  )
 }
 
 const components: Partial<Components> = {
@@ -84,6 +147,8 @@ export default function ArticleDetail({
   dictionary,
   post,
   relatedPosts,
+  loveCount,
+  userLoved,
 }: ArticleDetailProps) {
   const params = useParams()
   const locale = (params.locale as string) || 'en'
@@ -110,11 +175,20 @@ export default function ArticleDetail({
               {dayjs(post.created_at).format('MMMM D, YYYY')}
             </span>
             {post.author && (
-              <span className="flex items-center gap-1.5">
-                <User size={14} />
+              <span className="flex items-center gap-2">
+                {post.author_avatar ? (
+                  <img
+                    src={post.author_avatar}
+                    alt={post.author}
+                    className="h-6 w-6 rounded-full object-cover"
+                  />
+                ) : (
+                  <User size={14} />
+                )}
                 {dictionary.article.by} {post.author}
               </span>
             )}
+            <LoveButton postId={post.id} initialCount={loveCount} initialLoved={userLoved} />
           </div>
 
           <h1 className="mt-4 text-2xl font-bold text-zinc-100 sm:text-3xl md:text-4xl">
@@ -124,7 +198,7 @@ export default function ArticleDetail({
 
         <div className="prose prose-invert max-w-none leading-loose text-justify">
           <ReactMarkdown
-            rehypePlugins={[rehypeRaw]}
+            rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
             remarkPlugins={[remarkGfm]}
             components={components}
           >

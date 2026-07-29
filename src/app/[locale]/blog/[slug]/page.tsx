@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getDictionary } from '@/lib/i18n/dictionaries'
 import { createClient } from '@/lib/supabase/server'
+import { getLoveData } from '@/actions/loves'
 import ArticleDetail from '@/components/blog/ArticleDetail'
 
 type Props = {
@@ -14,7 +15,7 @@ export default async function ArticlePage({ params }: Props) {
 
   const { data: post } = await supabase
     .from('posts')
-    .select('id, slug, cover_image, category, published, created_at, author_id, post_translations(language, title, description, content)')
+    .select('id, slug, cover_image, category, published, created_at, author_id, authors(username, avatar_url), post_translations(language, title, description, content)')
     .eq('slug', slug)
     .eq('published', true)
     .single()
@@ -44,6 +45,7 @@ export default async function ArticlePage({ params }: Props) {
 
   const translation = post.post_translations?.find(t => t.language === locale) || post.post_translations?.[0]
 
+  const authorData = post.authors as { username?: string; avatar_url?: string | null } | null
   const article = {
     id: post.id,
     title: translation?.title || '',
@@ -52,15 +54,21 @@ export default async function ArticlePage({ params }: Props) {
     excerpt: translation?.description || '',
     cover_image: post.cover_image || '',
     created_at: post.created_at,
-    author: 'Mina N. F.',
+    author: authorData?.username || 'Mina N. F.',
+    author_avatar: authorData?.avatar_url || null,
     tags: [] as string[],
   }
+
+  // Fetch love data
+  const loveData = await getLoveData(post.id)
 
   return (
     <ArticleDetail
       dictionary={dict}
       post={article}
       relatedPosts={relatedPosts}
+      loveCount={loveData.count}
+      userLoved={loveData.loved}
     />
   )
 }

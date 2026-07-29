@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import DOMPurify from 'dompurify'
 import { DiagramViewer } from '@/components/blog/DiagramViewer'
 
 type DiagramType = 'mermaid' | 'graphviz' | 'plantuml'
@@ -36,7 +37,7 @@ function MermaidRenderer({ code, onRender }: { code: string; onRender: () => voi
           startOnLoad: false,
           theme: 'dark',
           fontFamily: 'Tajawal, sans-serif',
-          securityLevel: 'loose',
+          securityLevel: 'strict',
           themeVariables: {
             primaryColor: '#1e293b',
             primaryTextColor: '#e2e8f0',
@@ -55,7 +56,7 @@ function MermaidRenderer({ code, onRender }: { code: string; onRender: () => voi
 
         const { svg } = await mermaid.render(id, code)
         if (!cancelled && containerRef.current) {
-          containerRef.current.innerHTML = svg
+          containerRef.current.innerHTML = DOMPurify.sanitize(svg)
           onRender()
         }
       } catch {
@@ -136,7 +137,7 @@ function PlantUmlRenderer({ code, onRender }: { code: string; onRender: () => vo
 
         const svgText = await res.text()
         if (!cancelled && containerRef.current) {
-          containerRef.current.innerHTML = svgText
+          containerRef.current.innerHTML = DOMPurify.sanitize(svgText)
           onRender()
         }
       } catch {

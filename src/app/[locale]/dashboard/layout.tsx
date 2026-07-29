@@ -4,7 +4,7 @@ import { ReactNode, useState } from 'react'
 import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronLeft, ChevronRight, LayoutDashboard, FileText, Plus, LogOut, Menu, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, LayoutDashboard, FileText, Plus, User, LogOut, Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { logout } from '@/actions/auth'
 
@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { href: '/dashboard', label: { ar: 'لوحة التحكم', en: 'Dashboard', ru: 'Панель' }, icon: LayoutDashboard },
   { href: '/dashboard/posts', label: { ar: 'المقالات', en: 'Posts', ru: 'Статьи' }, icon: FileText },
   { href: '/dashboard/posts/new', label: { ar: 'مقال جديد', en: 'New Post', ru: 'Новая статья' }, icon: Plus },
+  { href: '/dashboard/profile', label: { ar: 'الملف الشخصي', en: 'Profile', ru: 'Профиль' }, icon: User },
 ]
 
 function getPageTitle(pathname: string, locale: string) {

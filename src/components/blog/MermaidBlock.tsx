@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import DOMPurify from 'dompurify'
 
 interface MermaidBlockProps {
   chart: string
@@ -26,7 +27,7 @@ export function MermaidBlock({ chart }: MermaidBlockProps) {
           startOnLoad: false,
           theme: 'dark',
           fontFamily: 'Tajawal, sans-serif',
-          securityLevel: 'loose',
+          securityLevel: 'strict',
           themeVariables: {
             primaryColor: '#1e293b',
             primaryTextColor: '#e2e8f0',
@@ -45,7 +46,7 @@ export function MermaidBlock({ chart }: MermaidBlockProps) {
 
         const { svg } = await mermaid.render(id, chart)
         if (!cancelled && containerRef.current) {
-          containerRef.current.innerHTML = svg
+          containerRef.current.innerHTML = DOMPurify.sanitize(svg)
         }
       } catch {
         if (!cancelled) setError(true)

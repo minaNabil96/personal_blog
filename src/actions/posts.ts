@@ -169,6 +169,15 @@ export async function updatePost(id: string, formData: FormData) {
     }
 
     const admin = createAdminClient()
+    const { data: existing } = await admin
+      .from('posts')
+      .select('author_id')
+      .eq('id', id)
+      .single()
+
+    if (!existing) return { error: 'Post not found' }
+    if (existing.author_id !== user.id) return { error: 'Forbidden' }
+
     const { error: postError } = await admin
       .from('posts')
       .update({
@@ -178,6 +187,7 @@ export async function updatePost(id: string, formData: FormData) {
         published: validated.data.published,
       })
       .eq('id', id)
+      .eq('author_id', user.id)
 
     if (postError) return { error: postError.message }
 
@@ -227,7 +237,16 @@ export async function deletePost(formData: FormData) {
     if (!user) return { error: 'Unauthorized' }
 
     const admin = createAdminClient()
-    const { error } = await admin.from('posts').delete().eq('id', id)
+    const { data: existing } = await admin
+      .from('posts')
+      .select('author_id')
+      .eq('id', id)
+      .single()
+
+    if (!existing) return { error: 'Post not found' }
+    if (existing.author_id !== user.id) return { error: 'Forbidden' }
+
+    const { error } = await admin.from('posts').delete().eq('id', id).eq('author_id', user.id)
     if (error) return { error: error.message }
 
     revalidatePath(`/${locale}/dashboard/posts`)

@@ -3,7 +3,20 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
+import rehypeSanitize from 'rehype-sanitize'
 import remarkGfm from 'remark-gfm'
+import type { Schema } from 'hast-util-sanitize'
+
+const sanitizeSchema: Schema = {
+  attributes: {
+    '*': ['className'],
+    div: ['className', 'itemScope', 'itemType'],
+    span: ['className'],
+    img: ['className', 'loading', 'ariaDescribedBy', 'ariaLabel', 'ariaLabelledBy', 'longDesc', 'src'],
+    code: [['className', /^language-|hljs/]],
+  },
+  strip: ['script'],
+}
 import {
   Bold, Italic, Strikethrough, Heading1, Heading2, Heading3,
   Code, TextQuote, List, ListOrdered, Table2, Image,
@@ -157,7 +170,7 @@ export function BlogEditor({ value, onChange, locale, draftKey }: BlogEditorProp
 
   const renderPreview = () => (
     <div className="prose prose-invert max-w-none leading-loose p-6 overflow-y-auto max-h-[70vh]">
-      <ReactMarkdown rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]} components={previewComponents}>
+      <ReactMarkdown rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]} remarkPlugins={[remarkGfm]} components={previewComponents}>
         {value || '*Start writing to see the preview...*'}
       </ReactMarkdown>
     </div>

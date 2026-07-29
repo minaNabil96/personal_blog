@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { Check, Copy } from 'lucide-react'
+import DOMPurify from 'dompurify'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github-dark.css'
 
@@ -29,11 +30,16 @@ export function CodeBlock({ className, children }: CodeBlockProps) {
     }
   }, [children, lang])
 
+  const sanitized = useMemo(() => {
+    if (typeof window === 'undefined') return highlighted
+    return DOMPurify.sanitize(highlighted)
+  }, [highlighted])
+
   const lines = useMemo(() => {
-    const parts = highlighted.split('\n')
+    const parts = sanitized.split('\n')
     if (parts.length > 1 && parts[parts.length - 1] === '') parts.pop()
     return parts
-  }, [highlighted])
+  }, [sanitized])
 
   const showLineNumbers = lines.length > 1
 
@@ -72,7 +78,7 @@ export function CodeBlock({ className, children }: CodeBlockProps) {
             </tbody>
           </table>
         ) : (
-          <span className="hljs" dangerouslySetInnerHTML={{ __html: highlighted || ' ' }} />
+          <span className="hljs" dangerouslySetInnerHTML={{ __html: sanitized || ' ' }} />
         )}
       </div>
     </div>
