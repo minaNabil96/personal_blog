@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { GitBranch, MessageCircle } from 'lucide-react'
+import { Send } from 'lucide-react'
 
 export default function Footer() {
   return (
@@ -7,27 +7,18 @@ export default function Footer() {
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 py-10 md:flex-row">
         <p className="text-sm text-zinc-500">
           &copy; {new Date().getFullYear()} Mina&apos;s tech.{' '}
-          <span className="text-zinc-600">Built with Next.js &amp; Supabase.</span>
+          <span className="text-zinc-600">Built with Next.js & Supabase.</span>
         </p>
 
         <div className="flex items-center gap-4">
           <Link
-            href="https://github.com"
+            href="https://t.me/minas_tech"
             target="_blank"
             rel="noopener noreferrer"
             className="text-zinc-500 transition-colors hover:text-zinc-300"
-            aria-label="GitHub"
+            aria-label="Telegram"
           >
-            <GitBranch size={20} />
-          </Link>
-          <Link
-            href="https://twitter.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-zinc-500 transition-colors hover:text-zinc-300"
-            aria-label="Twitter"
-          >
-            <MessageCircle size={20} />
+            <Send size={20} />
           </Link>
         </div>
       </div>

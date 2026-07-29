@@ -1,6 +1,7 @@
 import { getDictionary } from '@/lib/i18n/dictionaries'
 import { createClient } from '@/lib/supabase/server'
 import BlogList from '@/components/blog/BlogList'
+import type { Metadata } from 'next'
 
 type Props = {
   params: Promise<{ locale: string }>
@@ -8,6 +9,41 @@ type Props = {
 }
 
 const POSTS_PER_PAGE = 12
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  const siteUrl = 'https://personalblog-phi-six.vercel.app'
+  
+  return {
+    title: 'Blog',
+    description: 'Latest articles about programming, technology, and AI',
+    metadataBase: new URL(siteUrl),
+    openGraph: {
+      type: 'website',
+      locale,
+      url: `${siteUrl}/${locale}/blog`,
+      siteName: "Mina's tech",
+      title: 'Blog | Mina&apos;s tech',
+      description: 'Latest articles about programming, technology, and AI',
+      images: [
+        {
+          url: '/og-default.svg',
+          width: 1200,
+          height: 630,
+          alt: 'Blog | Mina&apos;s tech',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      site: '@minas_tech',
+      creator: '@minas_tech',
+      title: 'Blog | Mina&apos;s tech',
+      description: 'Latest articles about programming, technology, and AI',
+      images: ['/og-default.svg'],
+    },
+  }
+}
 
 export default async function BlogPage({ params, searchParams }: Props) {
   const { locale } = await params

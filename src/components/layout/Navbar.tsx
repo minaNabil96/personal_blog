@@ -19,6 +19,36 @@ const navLinks = [
   { label: { en: 'Projects', ar: 'المشاريع', ru: 'Проекты' }, href: 'projects' },
 ]
 
+function Logo() {
+  return (
+    <svg
+      width="32"
+      height="32"
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      className="text-cyan-400"
+    >
+      <rect width="32" height="32" rx="8" fill="currentColor" opacity="0.15" />
+      <path
+        d="M8 20V12C8 9.79086 9.79086 8 12 8H20C22.2091 8 24 9.79086 24 12V20C24 22.2091 22.2091 24 20 24H12C9.79086 24 8 22.2091 8 20Z"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 16H20M16 12V20"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: boolean }) {
   const params = useParams()
   const router = useRouter()
@@ -64,9 +94,10 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
       <nav className="flex w-full items-center justify-between px-4 sm:px-6">
         <Link
           href={`/${locale}`}
-          className="text-lg font-bold text-zinc-100 hover:text-white transition-colors"
+          className="flex items-center gap-2 text-lg font-bold text-zinc-100 hover:text-white transition-colors"
         >
-          Mina&apos;s tech
+          <Logo />
+          <span>Mina&apos;s tech</span>
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">

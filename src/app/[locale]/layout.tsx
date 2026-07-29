@@ -3,6 +3,8 @@ import type { Metadata } from 'next'
 import { Navbar, Footer } from '@/components/layout'
 import { createClient } from '@/lib/supabase/server'
 
+const siteUrl = 'https://personalblog-phi-six.vercel.app'
+
 type Props = {
   children: ReactNode
   params: Promise<{ locale: string }>
@@ -16,6 +18,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       default: "Mina's tech",
     },
     description: "Mina N. F.'s personal blog about programming, technology, and AI",
+    metadataBase: new URL(siteUrl),
+    openGraph: {
+      type: 'website',
+      locale,
+      url: siteUrl,
+      siteName: "Mina's tech",
+      title: "Mina's tech",
+      description: "Mina N. F.'s personal blog about programming, technology, and AI",
+      images: [
+        {
+          url: '/og-default.svg',
+          width: 1200,
+          height: 630,
+          alt: "Mina's tech",
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      site: '@minas_tech',
+      creator: '@minas_tech',
+      title: "Mina's tech",
+      description: "Mina N. F.'s personal blog about programming, technology, and AI",
+      images: ['/og-default.png'],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
   }
 }
 
