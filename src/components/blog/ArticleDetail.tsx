@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
 import rehypeSanitize from 'rehype-sanitize'
@@ -63,6 +63,8 @@ function LoveButton({ postId, initialCount, initialLoved }: { postId: string; in
   const [count, setCount] = useState(initialCount)
   const [loved, setLoved] = useState(initialLoved)
   const [loading, setLoading] = useState(false)
+  const params = useParams()
+  const router = useRouter()
 
   const toggle = useCallback(async () => {
     if (loading) return
@@ -73,16 +75,21 @@ function LoveButton({ postId, initialCount, initialLoved }: { postId: string; in
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ postId }),
       })
+      if (res.status === 401) {
+        const locale = (params.locale as string) || 'en'
+        router.push(`/${locale}/login`)
+        return
+      }
       if (!res.ok) throw new Error('Failed')
       const data = await res.json()
       setCount(data.count)
       setLoved(data.loved)
     } catch {
-      // ignore
+      // ignore network errors silently
     } finally {
       setLoading(false)
     }
-  }, [postId, loading])
+  }, [postId, loading, params.locale, router])
 
   return (
     <button
