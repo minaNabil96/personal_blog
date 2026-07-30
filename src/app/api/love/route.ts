@@ -1,52 +1,73 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
+
+const rateLimit = new Map<string, { count: number; resetAt: number }>()
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const entry = rateLimit.get(ip)
+  if (!entry || now > entry.resetAt) {
+    rateLimit.set(ip, { count: 1, resetAt: now + 60_000 })
+    return true
+  }
+  if (entry.count >= 10) return false
+  entry.count++
+  return true
+}
+
+function getIp(request: NextRequest): string {
+  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    || request.headers.get('x-real-ip')
+    || '127.0.0.1'
+}
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getIp(request)
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+    }
+
     const { postId } = await request.json()
 
     if (!postId) {
       return NextResponse.json({ error: 'Post ID required' }, { status: 400 })
     }
 
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const supabase = createAdminClient()
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Check if already loved
     const { data: existing } = await supabase
       .from('post_loves')
       .select('id')
       .eq('post_id', postId)
-      .eq('user_id', user.id)
-      .single()
+      .eq('ip_address', ip)
+      .maybeSingle()
 
     let loved: boolean
 
     if (existing) {
-      // Unlike
       const { error } = await supabase
         .from('post_loves')
         .delete()
         .eq('post_id', postId)
-        .eq('user_id', user.id)
+        .eq('ip_address', ip)
 
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
       loved = false
     } else {
-      // Like
       const { error } = await supabase
         .from('post_loves')
-        .insert({ post_id: postId, user_id: user.id })
+        .insert({ post_id: postId, ip_address: ip })
 
-      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      if (error) {
+        if (error.code === '23505') {
+          return NextResponse.json({ error: 'Already loved' }, { status: 409 })
+        }
+        return NextResponse.json({ error: error.message }, { status: 500 })
+      }
       loved = true
     }
 
-    // Get updated count
     const { count, error: countError } = await supabase
       .from('post_loves')
       .select('*', { count: 'exact', head: true })

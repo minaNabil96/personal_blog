@@ -1,41 +1,12 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
 
-export async function toggleLove(postId: string) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) return { error: 'Unauthorized' }
-
-  // Check if already loved
-  const { data: existing } = await supabase
-    .from('post_loves')
-    .select('id')
-    .eq('post_id', postId)
-    .eq('user_id', user.id)
-    .single()
-
-  if (existing) {
-    // Unlike
-    const { error } = await supabase
-      .from('post_loves')
-      .delete()
-      .eq('post_id', postId)
-      .eq('user_id', user.id)
-
-    if (error) return { error: error.message }
-    return { success: true, loved: false }
-  } else {
-    // Like
-    const { error } = await supabase
-      .from('post_loves')
-      .insert({ post_id: postId, user_id: user.id })
-
-    if (error) return { error: error.message }
-    return { success: true, loved: true }
-  }
+function getIpFromHeaders(headersList: Headers): string {
+  return headersList.get('x-forwarded-for')?.split(',')[0]?.trim()
+    || headersList.get('x-real-ip')
+    || 'unknown'
 }
 
 export async function getLoveCount(postId: string) {
@@ -51,24 +22,23 @@ export async function getLoveCount(postId: string) {
 }
 
 export async function getUserLovedStatus(postId: string) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const headersList = await headers()
+  const ip = getIpFromHeaders(headersList)
+  if (ip === 'unknown') return { loved: false }
 
-  if (!user) return { loved: false }
+  const supabase = await createClient()
 
   const { data } = await supabase
     .from('post_loves')
     .select('id')
     .eq('post_id', postId)
-    .eq('user_id', user.id)
-    .single()
+    .eq('ip_address', ip)
+    .maybeSingle()
 
   return { loved: !!data }
 }
 
 export async function getLoveData(postId: string) {
-  const supabase = await createClient()
-
   const [countRes, userLovedRes] = await Promise.all([
     getLoveCount(postId),
     getUserLovedStatus(postId),
