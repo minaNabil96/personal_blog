@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const articleUrl = `${siteUrl}/${locale}/blog/${slug}`
   const ogImage = post.cover_image 
     ? (post.cover_image.startsWith('http') ? post.cover_image : `${siteUrl}${post.cover_image}`)
-    : `${siteUrl}/og-landing.svg`
+    : `${siteUrl}/og-default.png`
 
   return {
     title: translation?.title || 'Article',

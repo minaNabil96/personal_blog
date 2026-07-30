@@ -12,7 +12,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
   const siteUrl = 'https://personalblog-phi-six.vercel.app'
-  const ogImageUrl = `${siteUrl}/og-landing.svg`
+  const ogImageUrl = `${siteUrl}/og-default.png`
   
   return {
     title: "Mina's tech",

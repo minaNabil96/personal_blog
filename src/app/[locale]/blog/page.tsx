@@ -13,7 +13,7 @@ const POSTS_PER_PAGE = 12
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
   const siteUrl = 'https://personalblog-phi-six.vercel.app'
-  const ogImageUrl = `${siteUrl}/og-landing.svg`
+  const ogImageUrl = `${siteUrl}/og-default.png`
   
   return {
     title: 'Blog',
