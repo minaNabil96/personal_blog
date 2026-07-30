@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
@@ -159,11 +160,14 @@ export default function ArticleDetail({
     <article className="px-4 py-20 sm:px-6 sm:py-24">
       <div className="mx-auto max-w-3xl">
         {post.cover_image && (
-          <div className="mb-8 overflow-hidden rounded-2xl">
-            <img
+          <div className="relative w-full aspect-[16/9] max-h-[480px] overflow-hidden rounded-2xl bg-zinc-900">
+            <Image
               src={post.cover_image}
               alt={post.title}
-              className="h-full w-full object-cover"
+              fill
+              priority
+              className="object-cover object-center"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
             />
           </div>
         )}

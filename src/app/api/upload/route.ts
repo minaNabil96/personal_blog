@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { randomUUID } from 'crypto'
+import sharp from 'sharp'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
@@ -48,12 +49,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'File content does not match extension' }, { status: 400 })
     }
 
-    const fileName = `${randomUUID()}.${ext}`
+    // Resize to 1200x675 (16:9), convert to WebP with quality 80
+    const processedBuffer = await sharp(Buffer.from(buffer))
+      .resize(1200, 675, { fit: 'cover', position: 'centre' })
+      .webp({ quality: 80 })
+      .toBuffer()
+
+    const fileName = `${randomUUID()}.webp`
 
     const admin = createAdminClient()
     const { data, error } = await admin.storage
       .from('blog-images')
-      .upload(fileName, file, { cacheControl: '3600', upsert: false })
+      .upload(fileName, processedBuffer, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: 'image/webp',
+      })
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
