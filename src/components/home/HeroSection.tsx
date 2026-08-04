@@ -37,14 +37,19 @@ export default function HeroSection({ dictionary }: HeroSectionProps) {
           transition={{ duration: 0.6 }}
           className="mb-8"
         >
-          <Image
-            src="/mina.jpg"
-            alt={dictionary.hero.title}
-            width={160}
-            height={160}
-            priority
-            className="h-40 w-40 rounded-full border-2 border-zinc-700 object-cover shadow-2xl"
-          />
+          <motion.div
+            animate={{ y: [0, -12, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <Image
+              src="/mina.jpg"
+              alt={dictionary.hero.title}
+              width={160}
+              height={160}
+              priority
+              className="h-40 w-40 rounded-full border-2 border-zinc-700 object-cover shadow-2xl"
+            />
+          </motion.div>
         </motion.div>
 
         <motion.h1

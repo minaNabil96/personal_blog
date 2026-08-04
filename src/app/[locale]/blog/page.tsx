@@ -80,6 +80,7 @@ export default async function BlogPage({ params, searchParams }: Props) {
     .from('posts')
     .select('id, slug, cover_image, created_at, post_translations(title, description, language)', { count: 'exact' })
     .eq('published', true)
+    .eq('category', 'technology')
 
   if (postIds) {
     query = query.in('id', postIds)
