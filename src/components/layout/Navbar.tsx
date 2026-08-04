@@ -15,6 +15,7 @@ const locales = [
 
 const navLinks = [
   { label: { en: 'Home', ar: 'الرئيسية', ru: 'Главная' }, href: '' },
+  { label: { en: 'About', ar: 'من أنا', ru: 'Обо мне' }, href: 'about' },
   { label: { en: 'Blog', ar: 'المدونة', ru: 'Блог' }, href: 'blog' },
   { label: { en: 'Projects', ar: 'المشاريع', ru: 'Проекты' }, href: 'projects' },
 ]
