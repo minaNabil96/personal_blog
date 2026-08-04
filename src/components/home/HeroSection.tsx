@@ -2,8 +2,9 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useParams } from 'next/navigation'
-import { ArrowRight, ArrowLeft } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Mail } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 interface HeroSectionProps {
@@ -11,10 +12,9 @@ interface HeroSectionProps {
     hero: {
       title: string
       subtitle: string
-    }
-    nav: {
-      projects: string
-      blog: string
+      role: string
+      view_projects: string
+      get_in_touch: string
     }
   }
 }
@@ -31,20 +31,27 @@ export default function HeroSection({ dictionary }: HeroSectionProps) {
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
 
       <div className="relative z-10 flex max-w-3xl flex-col items-center text-center">
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
-          className="text-lg text-zinc-400"
+          className="mb-8"
         >
-          {dictionary.hero.title}
-        </motion.p>
+          <Image
+            src="/mina.jpg"
+            alt={dictionary.hero.title}
+            width={160}
+            height={160}
+            priority
+            className="h-40 w-40 rounded-full border-2 border-zinc-700 object-cover shadow-2xl"
+          />
+        </motion.div>
 
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-          className="mt-2 bg-gradient-to-r from-zinc-100 via-white to-zinc-400 bg-clip-text text-5xl font-bold leading-tight text-transparent sm:text-7xl"
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="bg-gradient-to-r from-zinc-100 via-white to-zinc-400 bg-clip-text text-5xl font-bold leading-tight text-transparent sm:text-7xl"
         >
           {dictionary.hero.title}
         </motion.h1>
@@ -52,8 +59,17 @@ export default function HeroSection({ dictionary }: HeroSectionProps) {
         <motion.p
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-4 max-w-xl text-lg text-zinc-400"
+          transition={{ duration: 0.6, delay: 0.25 }}
+          className="mt-3 text-xl font-semibold text-cyan-400"
+        >
+          {dictionary.hero.role}
+        </motion.p>
+
+        <motion.p
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="mt-5 max-w-2xl text-lg leading-relaxed text-zinc-400"
         >
           {dictionary.hero.subtitle}
         </motion.p>
@@ -61,20 +77,21 @@ export default function HeroSection({ dictionary }: HeroSectionProps) {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.45 }}
+          transition={{ duration: 0.6, delay: 0.55 }}
           className="mt-8 flex flex-wrap items-center justify-center gap-4"
         >
           <Link href={`/${locale}/projects`}>
             <Button size="lg">
-              {dictionary.nav.projects}
+              {dictionary.hero.view_projects}
               <Arrow size={18} />
             </Button>
           </Link>
-          <Link href={`/${locale}/blog`}>
+          <a href="mailto:minanabil96@yandex.com">
             <Button variant="secondary" size="lg">
-              {dictionary.nav.blog}
+              <Mail size={18} />
+              {dictionary.hero.get_in_touch}
             </Button>
-          </Link>
+          </a>
         </motion.div>
       </div>
     </section>

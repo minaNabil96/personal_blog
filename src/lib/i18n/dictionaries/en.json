@@ -16,7 +16,7 @@
     "phone": "+7 (991) 014-17-37",
     "email": "minanabil96@yandex.com",
     "nationality": "Egyptian",
-    "languages": "Arabic (Native), English (Good), Russian (Beginner/A1)",
+    "languages": "Arabic (Native), English (Good), Russian (Beginner/A2)",
     "summary": "Dedicated AI Implementation Specialist and current Master's student at LETI University, specializing in deploying AI-driven services and prompt engineering workflows. Leveraging 3.5 years of solid technical experience in full stack development to bridge the gap between complex AI models and practical business applications.",
     "experienceTitle": "Professional Experience",
     "experienceRole": "Full Stack Developer (Transitioning to AI Implementation)",
@@ -37,8 +37,11 @@
     "skillInfra": "Infrastructure: Git, Docker"
   },
   "hero": {
-    "title": "Welcome to My Blog",
-    "subtitle": "I write about programming, technology, and everything new"
+    "title": "Mina N. F.",
+    "subtitle": "Full Stack Developer & Prompt Engineer. I build intelligent systems, modern web applications, and AI-driven workflows — bridging machine learning, prompt engineering, and scalable full-stack solutions.",
+    "role": "Full Stack Developer & Prompt Engineer",
+    "view_projects": "View Projects",
+    "get_in_touch": "Get in Touch"
   },
   "featured": {
     "title": "Featured Projects",
@@ -51,7 +54,7 @@
   },
   "blog": {
     "title": "Blog",
-    "subtitle": "Articles about programming and technology",
+    "subtitle": "Articles about AI, programming, and technology",
     "search": "Search articles...",
     "no_posts": "No posts yet",
     "previous": "Previous",

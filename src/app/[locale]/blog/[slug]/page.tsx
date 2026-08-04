@@ -110,8 +110,8 @@ export default async function ArticlePage({ params }: Props) {
     excerpt: translation?.description || '',
     cover_image: post.cover_image || '',
     created_at: post.created_at,
-    author: authorData?.username || 'Mina N. F.',
-    author_avatar: authorData?.avatar_url || null,
+    author: 'Mina N. F.',
+    author_avatar: authorData?.avatar_url || '/mina.jpg',
     tags: [] as string[],
   }
 

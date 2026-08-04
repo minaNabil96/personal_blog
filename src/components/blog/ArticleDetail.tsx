@@ -172,8 +172,8 @@ export default function ArticleDetail({
           </div>
         )}
 
-        <div className="mb-8">
-          <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-500">
+        <div className="mb-8 mt-6">
+          <div className="flex flex-wrap items-center gap-3 text-sm text-zinc-500 sm:gap-4">
             <span className="flex items-center gap-1.5">
               <Calendar size={14} />
               {dayjs(post.created_at).format('MMMM D, YYYY')}
@@ -192,7 +192,9 @@ export default function ArticleDetail({
                 {dictionary.article.by} {post.author}
               </span>
             )}
-            <LoveButton postId={post.id} initialCount={loveCount} initialLoved={userLoved} />
+            <span className="sm:ms-auto">
+              <LoveButton postId={post.id} initialCount={loveCount} initialLoved={userLoved} />
+            </span>
           </div>
 
           <h1 className="mt-4 text-2xl font-bold text-zinc-100 sm:text-3xl md:text-4xl">
