@@ -71,11 +71,16 @@ html {
 
 /* Blockquote styling */
 .prose blockquote {
-  border-inline-start: 3px solid #22d3ee;
+  border-inline-start: 3px solid #fbbf24;
   padding-inline-start: 1.25rem;
   font-style: normal;
-  background: rgba(34, 211, 238, 0.03);
+  background: rgba(251, 191, 36, 0.03);
   border-radius: 0 0.5rem 0.5rem 0;
+  color: #fde047;
+}
+
+[dir="rtl"] .prose blockquote {
+  border-radius: 0.5rem 0 0 0.5rem;
 }
 
 [dir="rtl"] .prose blockquote {
