@@ -17,7 +17,7 @@ export default async function PostsPage({ params }: { params: Promise<{ locale: 
 
   const { data: posts } = await supabase
     .from('posts')
-    .select('id, slug, category, published, created_at, post_translations(title, language)')
+    .select('id, slug, category, published, created_at, post_translations(title, language), post_view_counts(view_count)')
     .order('created_at', { ascending: false })
 
   return (

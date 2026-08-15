@@ -62,6 +62,35 @@ export type Database = {
           },
         ]
       }
+      post_views: {
+        Row: {
+          created_at: string
+          id: number
+          ip_address: string
+          post_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          ip_address: string
+          post_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          ip_address?: string
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_views_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       posts: {
         Row: {
           author_id: string
@@ -223,7 +252,13 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      post_view_counts: {
+        Row: {
+          post_id: string | null
+          view_count: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

@@ -51,6 +51,7 @@ export function PostsTable({ locale, posts }: { locale: string; posts: any[] }) 
               <th className="px-4 py-3 text-start font-medium hidden md:table-cell">Category</th>
               <th className="px-4 py-3 text-start font-medium hidden sm:table-cell">Status</th>
               <th className="px-4 py-3 text-start font-medium hidden lg:table-cell">Date</th>
+              <th className="px-4 py-3 text-start font-medium hidden md:table-cell">Views</th>
               <th className="px-4 py-3 text-end font-medium">Actions</th>
             </tr>
           </thead>
@@ -80,6 +81,9 @@ export function PostsTable({ locale, posts }: { locale: string; posts: any[] }) 
                   </td>
                   <td className="px-4 py-3 text-zinc-500 text-xs hidden lg:table-cell">
                     {dayjs(post.created_at).format('MMM D, YYYY')}
+                  </td>
+                  <td className="px-4 py-3 text-zinc-400 hidden md:table-cell">
+                    {post.post_view_counts?.[0]?.view_count ?? 0}
                   </td>
                   <td className="px-4 py-3 text-end">
                     <div className="flex items-center justify-end gap-1">

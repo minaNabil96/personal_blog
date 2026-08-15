@@ -8,9 +8,9 @@ import rehypeRaw from 'rehype-raw'
 import rehypeSanitize from 'rehype-sanitize'
 import remarkGfm from 'remark-gfm'
 import type { Schema } from 'hast-util-sanitize'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import dayjs from 'dayjs'
-import { ArrowRight, ArrowLeft, Calendar, User, Heart } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Calendar, User, Heart, Eye } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { CodeBlock } from '@/components/blog/CodeBlock'
 import { DiagramBlock } from '@/components/blog/DiagramBlock'
@@ -57,6 +57,39 @@ interface ArticleDetailProps {
   relatedPosts: RelatedPost[]
   loveCount: number
   userLoved: boolean
+}
+
+function ViewTracker({ postId, onCount }: { postId: string; onCount: (count: number) => void }) {
+  const fired = useRef(false)
+
+  useEffect(() => {
+    if (fired.current) return
+    fired.current = true
+
+    fetch(`/api/post-view`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ postId }),
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && typeof data.count === 'number') onCount(data.count)
+      })
+      .catch(() => {
+        // ignore network errors silently
+      })
+  }, [postId, onCount])
+
+  return null
+}
+
+function ViewCount({ count }: { count: number }) {
+  return (
+    <span className="flex items-center gap-1.5 text-sm text-zinc-500">
+      <Eye size={14} />
+      <span>{count.toLocaleString()}</span>
+    </span>
+  )
 }
 
 function LoveButton({ postId, initialCount, initialLoved }: { postId: string; initialCount: number; initialLoved: boolean }) {
@@ -155,10 +188,16 @@ export default function ArticleDetail({
   const locale = (params.locale as string) || 'en'
   const isRtl = locale === 'ar'
   const Arrow = isRtl ? ArrowLeft : ArrowRight
+  const [viewCount, setViewCount] = useState(0)
+
+  const handleViewCount = useCallback((count: number) => {
+    setViewCount(count)
+  }, [])
 
   return (
     <article className="px-4 py-20 sm:px-6 sm:py-24">
       <div className="mx-auto max-w-3xl">
+        <ViewTracker postId={post.id} onCount={handleViewCount} />
         {post.cover_image && (
           <div className="relative w-full aspect-[16/9] max-h-[480px] overflow-hidden rounded-2xl bg-zinc-900">
             <Image
@@ -193,7 +232,10 @@ export default function ArticleDetail({
               </span>
             )}
             <span className="sm:ms-auto">
-              <LoveButton postId={post.id} initialCount={loveCount} initialLoved={userLoved} />
+              <span className="flex items-center gap-4">
+                <ViewCount count={viewCount} />
+                <LoveButton postId={post.id} initialCount={loveCount} initialLoved={userLoved} />
+              </span>
             </span>
           </div>
 
