@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import dayjs from 'dayjs'
 import { ArrowRight, ArrowLeft } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
+import { ClampedText } from '@/components/ui/ClampedText'
 
 interface Article {
   id: string
@@ -71,11 +72,11 @@ export default function LatestArticles({ dictionary, articles }: LatestArticlesP
                       {article.title}
                     </h3>
                     {article.excerpt && (
-                      <p className="text-sm leading-relaxed text-zinc-400 line-clamp-2">
+                      <ClampedText lines={2} className="text-sm leading-relaxed text-zinc-400">
                         {article.excerpt}
-                      </p>
+                      </ClampedText>
                     )}
-                    <span className="mt-2 flex items-center gap-1 text-sm font-medium text-zinc-300 group-hover:text-white transition-colors">
+                    <span className="mt-auto flex items-center gap-1 text-sm font-medium text-zinc-300 group-hover:text-white transition-colors">
                       {dictionary.articles.read_more}
                       <Arrow size={14} />
                     </span>

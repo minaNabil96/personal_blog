@@ -7,6 +7,7 @@ import dayjs from 'dayjs'
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { ClampedText } from '@/components/ui/ClampedText'
 
 interface Post {
   id: string
@@ -121,9 +122,9 @@ export default function BlogList({
                         {post.title}
                       </h3>
                       {post.excerpt && (
-                        <p className="text-sm leading-relaxed text-zinc-400 line-clamp-2">
+                        <ClampedText lines={2} className="text-sm leading-relaxed text-zinc-400">
                           {post.excerpt}
-                        </p>
+                        </ClampedText>
                       )}
                     </CardContent>
                   </Card>
