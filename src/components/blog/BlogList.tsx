@@ -122,7 +122,7 @@ export default function BlogList({
                         {post.title}
                       </h3>
                       {post.excerpt && (
-                        <ClampedText lines={3} className="text-sm leading-relaxed text-zinc-400">
+                        <ClampedText lines={2} className="text-sm leading-relaxed text-zinc-400">
                           {post.excerpt}
                         </ClampedText>
                       )}

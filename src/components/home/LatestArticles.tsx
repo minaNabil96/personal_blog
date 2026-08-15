@@ -72,7 +72,7 @@ export default function LatestArticles({ dictionary, articles }: LatestArticlesP
                       {article.title}
                     </h3>
                     {article.excerpt && (
-                      <ClampedText lines={3} className="text-sm leading-relaxed text-zinc-400">
+                      <ClampedText lines={2} className="text-sm leading-relaxed text-zinc-400">
                         {article.excerpt}
                       </ClampedText>
                     )}
