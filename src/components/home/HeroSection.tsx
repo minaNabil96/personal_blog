@@ -26,7 +26,7 @@ export default function HeroSection({ dictionary }: HeroSectionProps) {
   const Arrow = isRtl ? ArrowLeft : ArrowRight
 
   return (
-    <section className="relative flex min-h-[90vh] items-center justify-center overflow-hidden px-6">
+    <section className="relative flex min-h-[90vh] items-center justify-center overflow-hidden px-6 pt-28 sm:pt-32">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800/20 via-transparent to-transparent" />
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
 
