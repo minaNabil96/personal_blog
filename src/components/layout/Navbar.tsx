@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 import { Menu, X, Globe, ChevronDown, LayoutDashboard, LogOut } from 'lucide-react'
 import { logout } from '@/actions/auth'
@@ -33,12 +33,31 @@ function Logo() {
 
 export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: boolean }) {
   const params = useParams()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const router = useRouter()
   const locale = (params.locale as string) || 'en'
   const [mobileOpen, setMobileOpen] = useState(false)
   const [langOpen, setLangOpen] = useState(false)
   const langRef = useRef<HTMLDivElement>(null)
   const isRtl = locale === 'ar'
+
+  // Keeps the current page when switching language instead of jumping home.
+  const localeHref = useCallback((code: string) => {
+    const segments = pathname.split('/').filter(Boolean)
+    if (locales.some((l) => l.code === segments[0])) {
+      segments[0] = code
+    } else {
+      segments.unshift(code)
+    }
+    const path = `/${segments.join('/')}`
+    const query = searchParams.toString()
+    return query ? `${path}?${query}` : path
+  }, [pathname, searchParams])
+
+  const rememberLocale = useCallback((code: string) => {
+    document.cookie = `NEXT_LOCALE=${code}; path=/; max-age=31536000; samesite=lax`
+  }, [])
 
   useEffect(() => {
     const handleResize = () => {
@@ -108,9 +127,14 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
                 {locales.map((l) => (
                   <Link
                     key={l.code}
-                    href={`/${l.code}`}
-                    onClick={() => setLangOpen(false)}
-                    className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-zinc-100"
+                    href={localeHref(l.code)}
+                    onClick={() => {
+                      rememberLocale(l.code)
+                      setLangOpen(false)
+                    }}
+                    className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-zinc-800 hover:text-zinc-100 ${
+                      l.code === locale ? 'bg-zinc-800/60 text-zinc-100' : 'text-zinc-300'
+                    }`}
                   >
                     {l.label}
                   </Link>
@@ -182,8 +206,11 @@ export default function Navbar({ isAuthenticated = false }: { isAuthenticated?: 
                   {locales.map((l) => (
                     <Link
                       key={l.code}
-                      href={`/${l.code}`}
-                      onClick={() => setMobileOpen(false)}
+                      href={localeHref(l.code)}
+                      onClick={() => {
+                        rememberLocale(l.code)
+                        setMobileOpen(false)
+                      }}
                       className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
                         l.code === locale
                           ? 'bg-zinc-800 text-zinc-100'
