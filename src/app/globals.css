@@ -71,20 +71,56 @@ html {
 
 /* Blockquote styling */
 .prose blockquote {
-  border-inline-start: 3px solid #fbbf24;
-  padding-inline-start: 1.25rem;
+  position: relative;
+  margin: 2.25rem 0;
+  padding-block: 1.5rem;
+  padding-inline: 3.5rem 1.75rem;
+  border: 1px solid rgba(34, 211, 238, 0.15);
+  border-inline-start: 3px solid rgba(34, 211, 238, 0.75);
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.08), rgba(24, 24, 27, 0.45));
+  color: #e4e4e7;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.0625rem;
+  line-height: 1.85;
+}
+
+.prose blockquote p {
+  margin: 0;
+  color: inherit;
+  font-style: inherit;
+}
+
+.prose blockquote p + p {
+  margin-top: 0.85rem;
+}
+
+/* Replace the typography plugin's inline quotes with a single decorative mark */
+.prose blockquote p:first-of-type::before,
+.prose blockquote p:last-of-type::after {
+  content: none;
+}
+
+.prose blockquote::before {
+  content: "\201C";
+  position: absolute;
+  inset-inline-start: 1.1rem;
+  top: 0.9rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 3rem;
+  line-height: 1;
+  color: rgba(34, 211, 238, 0.45);
+  pointer-events: none;
+}
+
+/* Arabic script is not set in italics and uses its own quotation marks */
+[dir="rtl"] .prose blockquote {
   font-style: normal;
-  background: rgba(251, 191, 36, 0.03);
-  border-radius: 0 0.5rem 0.5rem 0;
-  color: #fde047;
 }
 
-[dir="rtl"] .prose blockquote {
-  border-radius: 0.5rem 0 0 0.5rem;
-}
-
-[dir="rtl"] .prose blockquote {
-  border-radius: 0.5rem 0 0 0.5rem;
+[dir="rtl"] .prose blockquote::before {
+  content: "\00AB";
 }
 
 /* Heading hierarchy */
@@ -285,8 +321,8 @@ body.scroll-lock {
   --tw-prose-counters: #a1a1aa;
   --tw-prose-bullets: #52525b;
   --tw-prose-hr: #27272a;
-  --tw-prose-quotes: #d4d4d8;
-  --tw-prose-quote-borders: #22d3ee;
+  --tw-prose-quotes: #e4e4e7;
+  --tw-prose-quote-borders: rgba(34, 211, 238, 0.75);
   --tw-prose-captions: #a1a1aa;
   --tw-prose-code: #67e8f9;
   --tw-prose-pre-code: #e4e4e7;
