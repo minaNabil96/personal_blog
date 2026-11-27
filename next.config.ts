@@ -1,12 +1,13 @@
 import type { NextConfig } from 'next'
 
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://aezhalzpeitbnxjqcylb.supabase.co'
 const csp = [
   `default-src 'self'`,
   `script-src 'self' 'unsafe-inline' 'unsafe-eval'`,
   `style-src 'self' 'unsafe-inline'`,
   `img-src 'self' data: blob: https://*.supabase.co https://www.plantuml.com`,
   `font-src 'self' data:`,
-  `connect-src 'self' https://aezhalzpeitbnxjqcylb.supabase.co https://www.plantuml.com`,
+  `connect-src 'self' ${supabaseUrl} https://www.plantuml.com`,
   `frame-src 'none'`,
   `object-src 'none'`,
   `base-uri 'none'`,
