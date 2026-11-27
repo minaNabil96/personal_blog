@@ -50,8 +50,9 @@ export async function login(formData: FormData) {
     return { error: 'Invalid email or password.' }
   }
 
-  const locale = formData.get('locale') as string || 'ar'
-  redirect(`/${locale}/dashboard`)
+  const requestedLocale = String(formData.get('locale') || 'ar')
+  const locale = ['ar', 'en', 'ru'].includes(requestedLocale) ? requestedLocale : 'ar'
+  redirect(`/${locale}`)
 }
 
 export async function logout() {

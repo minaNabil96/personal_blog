@@ -3,7 +3,18 @@ import type { NextRequest } from "next/server";
 
 const SUPPORTED_LOCALES = ["ar", "en", "ru"] as const;
 const DEFAULT_LOCALE = "ar";
-const PROJECT_REF = "aezhalzpeitbnxjqcylb";
+
+function getSupabaseProjectRef(): string {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl) return "";
+  try {
+    return new URL(supabaseUrl).hostname.split(".")[0];
+  } catch {
+    return "";
+  }
+}
+
+const PROJECT_REF = getSupabaseProjectRef();
 
 function getLocaleFromPath(pathname: string): string | null {
   const segments = pathname.split("/").filter(Boolean);
@@ -38,14 +49,10 @@ function getPreferredLocale(request: NextRequest): string {
 }
 
 function isAuthenticated(request: NextRequest): boolean {
-  const authCookieName = `sb-${PROJECT_REF}-auth-token`;
-  const cookie = request.cookies.get(authCookieName);
-  if (cookie?.value) return true;
-
-  const allCookies = request.cookies.getAll();
-  return allCookies.some(
+  const cookiePrefix = PROJECT_REF ? `sb-${PROJECT_REF}` : "sb-";
+  return request.cookies.getAll().some(
     (c) =>
-      c.name.startsWith(`sb-${PROJECT_REF}`) &&
+      c.name.startsWith(cookiePrefix) &&
       (c.name.includes("auth-token") || c.name.includes("refresh-token"))
   );
 }
@@ -72,6 +79,10 @@ export function proxy(request: NextRequest): NextResponse {
     const locale = getPreferredLocale(request);
     const url = new URL(`/${locale}${pathname === "/" ? "" : pathname}${search}`, request.url);
     return NextResponse.redirect(url);
+  }
+
+  if (pathname === `/${pathLocale}/login` && isAuthenticated(request)) {
+    return NextResponse.redirect(new URL(`/${pathLocale}`, request.url));
   }
 
   if (
