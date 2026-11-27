@@ -8,6 +8,7 @@ import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ClampedText } from '@/components/ui/ClampedText'
+import ArticleLinkLoading from '@/components/blog/ArticleLinkLoading'
 
 interface Post {
   id: string
@@ -99,6 +100,7 @@ export default function BlogList({
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {posts.map((post, i) => (
                 <Link key={post.id} href={`/${locale}/blog/${post.slug}`}>
+                  <ArticleLinkLoading />
                   <Card
                     glass
                     className="group h-full transition-all duration-300 hover:border-zinc-700 hover:shadow-2xl"

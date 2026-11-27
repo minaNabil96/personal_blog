@@ -15,6 +15,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { CodeBlock } from '@/components/blog/CodeBlock'
 import { DiagramBlock } from '@/components/blog/DiagramBlock'
 import { ProseImage } from '@/components/blog/ProseImage'
+import ArticleLinkLoading from '@/components/blog/ArticleLinkLoading'
 import type { Components } from 'react-markdown'
 
 const sanitizeSchema: Schema = {
@@ -244,7 +245,7 @@ export default function ArticleDetail({
           </h1>
         </div>
 
-        <div className="prose prose-invert max-w-none leading-loose text-justify">
+        <div className="prose prose-invert max-w-none leading-loose text-start">
           <ReactMarkdown
             rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
             remarkPlugins={[remarkGfm]}
@@ -262,6 +263,7 @@ export default function ArticleDetail({
             <div className="grid gap-6 md:grid-cols-2">
               {relatedPosts.map((rp) => (
                 <Link key={rp.id} href={`/${locale}/blog/${rp.slug}`}>
+                  <ArticleLinkLoading />
                   <Card glass className="group transition-all duration-300 hover:border-zinc-700 hover:shadow-2xl">
                     {rp.cover_image && (
                       <div className="aspect-video overflow-hidden">
