@@ -29,6 +29,28 @@ const sanitizeSchema: Schema = {
   strip: ['script'],
 }
 
+function normalizeHeading(text: string): string {
+  return text.replace(/[*_`]/g, '').replace(/\s+/g, ' ').trim().toLowerCase()
+}
+
+/**
+ * The page already renders the post title as its only <h1>. Stored markdown
+ * usually repeats that title as a leading "# Heading", which would render the
+ * title twice, so drop it when it matches. A leading heading with different
+ * text is kept but demoted to <h2> to preserve a single-h1 outline.
+ */
+function prepareArticleContent(content: string, title: string): string {
+  const leadingHeading = content.match(/^\s*#(?!#)\s+(.+?)\s*(?:\r?\n|$)/)
+  if (!leadingHeading) return content
+
+  const headingText = leadingHeading[1].replace(/\s+#+\s*$/, '')
+  const body = content.slice(leadingHeading[0].length).replace(/^\s+/, '')
+
+  if (normalizeHeading(headingText) === normalizeHeading(title)) return body
+
+  return `## ${headingText}\n\n${body}`
+}
+
 interface Post {
   id: string
   title: string
@@ -189,6 +211,7 @@ export default function ArticleDetail({
   const locale = (params.locale as string) || 'en'
   const isRtl = locale === 'ar'
   const Arrow = isRtl ? ArrowLeft : ArrowRight
+  const content = prepareArticleContent(post.content, post.title)
   const [viewCount, setViewCount] = useState(0)
 
   const handleViewCount = useCallback((count: number) => {
@@ -240,18 +263,18 @@ export default function ArticleDetail({
             </span>
           </div>
 
-          <h1 className="mt-4 text-2xl font-bold text-zinc-100 sm:text-3xl md:text-4xl">
+          <h1 className="mt-4 text-balance text-2xl font-bold text-zinc-100 sm:text-3xl md:text-4xl">
             {post.title}
           </h1>
         </div>
 
-        <div className="prose prose-invert max-w-none leading-loose text-start">
+        <div className="prose prose-invert max-w-none text-pretty leading-loose text-start">
           <ReactMarkdown
             rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
             remarkPlugins={[remarkGfm]}
             components={components}
           >
-            {post.content}
+            {content}
           </ReactMarkdown>
         </div>
 
