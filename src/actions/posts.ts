@@ -3,9 +3,31 @@
 import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/supabase/server'
 
 const LOCALE_KEYS = ['ar', 'en', 'ru'] as const
+
+/**
+ * Server actions used to swallow every failure, so a broken save looked like a
+ * button that spins forever with nothing in the logs. Each step is now timed
+ * and failures are logged with a stack.
+ */
+function timer(action: string) {
+  const startedAt = Date.now()
+  return (step: string) => {
+    console.log(`[${action}] ${step} +${Date.now() - startedAt}ms`)
+  }
+}
+
+function failure(action: string, e: unknown) {
+  const aborted =
+    e instanceof Error && (e.name === 'AbortError' || /aborted|timeout/i.test(e.message))
+  console.error(`[${action}] failed${aborted ? ' (timed out)' : ''}`, e)
+  if (aborted) {
+    return { error: 'The server could not reach the database in time. Please try again.' }
+  }
+  return { error: e instanceof Error ? e.message : 'Unknown error' }
+}
 
 const translationSchema = z.object({
   title: z.string().optional().default(''),
@@ -31,10 +53,14 @@ const createPostSchema = z.object({
 type CreatePostInput = z.infer<typeof createPostSchema>
 
 export async function createPost(formData: FormData) {
+  const mark = timer('createPost')
   try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return { error: 'Unauthorized' }
+    const user = await getCurrentUser()
+    mark('auth')
+    if (!user) {
+      console.warn('[createPost] rejected: no signed-in user')
+      return { error: 'Unauthorized' }
+    }
 
     const raw: Record<string, unknown> = {}
     formData.forEach((value, key) => { raw[key] = value })
@@ -86,7 +112,14 @@ export async function createPost(formData: FormData) {
       .select()
       .single()
 
-    if (postError) return { error: postError.message }
+    mark('insert post')
+    if (postError) {
+      console.error('[createPost] post insert failed', postError)
+      if (postError.code === '23505') {
+        return { error: `A post with the slug "${validated.data.slug}" already exists.` }
+      }
+      return { error: postError.message }
+    }
     if (!post) return { error: 'Failed to create post' }
 
     const translationsToInsert = LOCALE_KEYS.map((locale) => ({
@@ -101,7 +134,11 @@ export async function createPost(formData: FormData) {
       .from('post_translations')
       .insert(translationsToInsert)
 
-    if (transError) return { error: transError.message }
+    mark('insert translations')
+    if (transError) {
+      console.error('[createPost] translations insert failed', transError)
+      return { error: transError.message }
+    }
 
     if (validated.data.category === 'project') {
       const { error: metaError } = await admin
@@ -119,17 +156,22 @@ export async function createPost(formData: FormData) {
     const locale = formData.get('locale') as string || 'ar'
     revalidatePath(`/${locale}/dashboard/posts`)
     revalidatePath(`/${locale}/blog`)
+    mark('revalidated')
     return { success: true, slug: validated.data.slug, locale }
   } catch (e) {
-    return { error: e instanceof Error ? e.message : 'Unknown error' }
+    return failure('createPost', e)
   }
 }
 
 export async function updatePost(id: string, formData: FormData) {
+  const mark = timer('updatePost')
   try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return { error: 'Unauthorized' }
+    const user = await getCurrentUser()
+    mark('auth')
+    if (!user) {
+      console.warn('[updatePost] rejected: no signed-in user')
+      return { error: 'Unauthorized' }
+    }
 
     const raw: Record<string, unknown> = {}
     formData.forEach((value, key) => { raw[key] = value })
@@ -221,9 +263,10 @@ export async function updatePost(id: string, formData: FormData) {
     const locale = formData.get('locale') as string || 'ar'
     revalidatePath(`/${locale}/dashboard/posts`)
     revalidatePath(`/${locale}/blog`)
+    mark('revalidated')
     return { success: true, slug: validated.data.slug, locale }
   } catch (e) {
-    return { error: e instanceof Error ? e.message : 'Unknown error' }
+    return failure('updatePost', e)
   }
 }
 
@@ -232,8 +275,7 @@ export async function deletePost(formData: FormData) {
     const id = formData.get('id') as string
     const locale = formData.get('locale') as string || 'ar'
 
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = await getCurrentUser()
     if (!user) return { error: 'Unauthorized' }
 
     const admin = createAdminClient()
@@ -253,6 +295,6 @@ export async function deletePost(formData: FormData) {
     revalidatePath(`/${locale}/blog`)
     return { success: true }
   } catch (e) {
-    return { error: e instanceof Error ? e.message : 'Unknown error' }
+    return failure('deletePost', e)
   }
 }

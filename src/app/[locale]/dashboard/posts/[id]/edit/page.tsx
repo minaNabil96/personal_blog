@@ -4,6 +4,9 @@ import { getDictionary } from '@/lib/i18n/dictionaries'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { PostForm } from '@/components/dashboard/PostForm'
 
+// Server Actions used on this page inherit this limit (see the new-post page).
+export const maxDuration = 60
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; id: string }> }): Promise<Metadata> {
   const { locale } = await params
   const dict = await getDictionary(locale as 'ar' | 'en' | 'ru')

@@ -61,6 +61,26 @@ const localeLabels: Record<string, string> = {
   ru: 'Русский',
 }
 
+/**
+ * Resolves to `null` if the promise has not settled in time, so a stalled
+ * request can never leave the submit button spinning forever.
+ */
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
+  return new Promise((resolve, reject) => {
+    const id = setTimeout(() => resolve(null), ms)
+    promise.then(
+      (value) => {
+        clearTimeout(id)
+        resolve(value)
+      },
+      (error) => {
+        clearTimeout(id)
+        reject(error)
+      }
+    )
+  })
+}
+
 export function PostForm({ locale, post }: { locale: string; post?: PostEditData }) {
   const router = useRouter()
   const { addToast } = useToast()
@@ -222,14 +242,25 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
       techStack.forEach(t => formData.append('tech_stack', t))
 
       const action = post ? updatePost(post.id, formData) : createPost(formData)
-      const result = await action
 
-      if (result && 'error' in result && result.error) {
+      // A dropped connection used to leave the promise pending forever: the
+      // button spun and nothing ever told the user what happened.
+      const result = await withTimeout(action, 90_000)
+
+      if (!result) {
+        addToast(
+          'The server took too long to respond. Your post may still be saving — check the Posts list before trying again.',
+          'error'
+        )
+        return
+      }
+
+      if ('error' in result && result.error) {
         addToast(result.error, 'error')
         return
       }
 
-      if (result && 'success' in result && result.success) {
+      if ('success' in result && result.success) {
         addToast(
           post
             ? (locale === 'ar' ? 'تم تحديث المقالة بنجاح' : locale === 'ru' ? 'Статья обновлена' : 'Post updated successfully')
@@ -244,9 +275,18 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
             router.push(`/${result.locale || locale}/blog/${result.slug}`)
           }
         }, 1500)
+        return
       }
+
+      addToast('The server returned an unexpected response. Please try again.', 'error')
     } catch (err) {
-      addToast('Error: ' + (err instanceof Error ? err.message : 'Unknown error'), 'error')
+      const message = err instanceof Error ? err.message : String(err)
+      addToast(
+        /fetch|network|load failed|timeout/i.test(message)
+          ? 'Could not reach the server. Check your connection and try again.'
+          : 'Error: ' + message,
+        'error'
+      )
     } finally {
       setSubmitting(false)
     }

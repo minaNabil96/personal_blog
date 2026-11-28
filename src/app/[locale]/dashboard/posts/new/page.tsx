@@ -2,6 +2,10 @@ import type { Metadata } from 'next'
 import { getDictionary } from '@/lib/i18n/dictionaries'
 import { PostForm } from '@/components/dashboard/PostForm'
 
+// Server Actions used on this page inherit this limit. Supabase occasionally
+// answers slowly; the default is too tight for a save that must not be lost.
+export const maxDuration = 60
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
   const dict = await getDictionary(locale as 'ar' | 'en' | 'ru')
