@@ -81,6 +81,10 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
   })
 }
 
+type ActionResult =
+  | { error: string; details?: unknown }
+  | { success: true; slug: string; locale: string }
+
 export function PostForm({ locale, post }: { locale: string; post?: PostEditData }) {
   const router = useRouter()
   const { addToast } = useToast()
@@ -241,11 +245,22 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
       
       techStack.forEach(t => formData.append('tech_stack', t))
 
-      const action = post ? updatePost(post.id, formData) : createPost(formData)
+      const call = (): Promise<ActionResult> =>
+        (post ? updatePost(post.id, formData) : createPost(formData)) as Promise<ActionResult>
 
-      // A dropped connection used to leave the promise pending forever: the
-      // button spun and nothing ever told the user what happened.
-      const result = await withTimeout(action, 90_000)
+      // The connection can drop after the server has already saved the post
+      // (it happened: the row was in the database but the browser saw a network
+      // error). Both actions are idempotent, so retrying once is safe and
+      // usually turns that loss into a success.
+      let result: ActionResult | null = null
+      try {
+        result = await withTimeout(call(), 90_000)
+      } catch (first) {
+        console.error('[PostForm] save request failed, retrying once', first)
+        await new Promise((resolve) => setTimeout(resolve, 1500))
+        formData.append('_retry', '1')
+        result = await withTimeout(call(), 90_000)
+      }
 
       if (!result) {
         addToast(
@@ -280,10 +295,11 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
 
       addToast('The server returned an unexpected response. Please try again.', 'error')
     } catch (err) {
+      console.error('[PostForm] save failed', err)
       const message = err instanceof Error ? err.message : String(err)
       addToast(
-        /fetch|network|load failed|timeout/i.test(message)
-          ? 'Could not reach the server. Check your connection and try again.'
+        /fetch|network|load failed|timeout|abort/i.test(message)
+          ? 'The connection dropped before the server confirmed the save. Check the Posts list — the post may already be there.'
           : 'Error: ' + message,
         'error'
       )

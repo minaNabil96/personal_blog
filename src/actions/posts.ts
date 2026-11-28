@@ -65,6 +65,11 @@ export async function createPost(formData: FormData) {
     const raw: Record<string, unknown> = {}
     formData.forEach((value, key) => { raw[key] = value })
 
+    // Set by the client when it re-sends after a dropped connection, so a
+    // duplicate slug can be recognised as our own earlier save rather than a
+    // real collision.
+    const isRetry = String(raw['_retry'] ?? '') === '1'
+
     const translations = {
       ar: {
         title: raw['translations.ar.title'] !== undefined ? String(raw['translations.ar.title']) : '',
@@ -116,6 +121,26 @@ export async function createPost(formData: FormData) {
     if (postError) {
       console.error('[createPost] post insert failed', postError)
       if (postError.code === '23505') {
+        // Same slug twice: either a real conflict, or this is a retry after the
+        // response to a save that did go through was lost in transit. If the
+        // post is ours, report the save as successful so a retry cannot
+        // duplicate or confuse the author.
+        if (!isRetry) {
+          return { error: `A post with the slug "${validated.data.slug}" already exists.` }
+        }
+        const { data: existing } = await admin
+          .from('posts')
+          .select('id, author_id')
+          .eq('slug', validated.data.slug)
+          .maybeSingle()
+
+        if (existing && existing.author_id === user.id) {
+          const locale = (formData.get('locale') as string) || 'ar'
+          revalidatePath(`/${locale}/dashboard/posts`)
+          revalidatePath(`/${locale}/blog`)
+          mark('already saved by this author, treated as success')
+          return { success: true, slug: validated.data.slug, locale }
+        }
         return { error: `A post with the slug "${validated.data.slug}" already exists.` }
       }
       return { error: postError.message }
