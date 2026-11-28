@@ -15,6 +15,8 @@ import { Input } from '@/components/ui/input'
 import { createPost, updatePost } from '@/actions/posts'
 import { useToast } from '@/components/ui/toast'
 import { BlogEditor } from '@/components/dashboard/BlogEditor'
+import { compressImage } from '@/lib/compressImage'
+import { uploadImage } from '@/lib/uploadImage'
 
 const LOCALES = ['ar', 'en', 'ru'] as const
 
@@ -115,51 +117,51 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
+    // Allow picking the same file again after a failed attempt.
+    e.target.value = ''
     if (!file) return
-
-    if (file.size > 4 * 1024 * 1024) {
-      addToast('Image must be under 4MB', 'error')
-      return
-    }
 
     if (!file.type.startsWith('image/')) {
       addToast('Only image files are allowed', 'error')
       return
     }
 
+    if (file.size > 25 * 1024 * 1024) {
+      addToast('Image must be under 25MB', 'error')
+      return
+    }
+
     setUploading(true)
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 60000)
+
     try {
-      const formData = new FormData()
-      formData.append('file', file)
-
-      const controller = new AbortController()
-      const timeout = setTimeout(() => controller.abort(), 15000)
-
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-        signal: controller.signal,
+      // Shrink the image in the browser first: a 4MB photo would otherwise take
+      // far longer to upload than the request timeout allows on a slow link.
+      const compressed = await compressImage(file, {
+        maxWidth: 1600,
+        maxHeight: 900,
+        aspectRatio: 16 / 9,
+        quality: 0.86,
       })
-      clearTimeout(timeout)
 
-      const data = await res.json()
-
-      if (!res.ok) {
-        addToast(data.error || 'Upload failed', 'error')
+      if (compressed.size > 4 * 1024 * 1024) {
+        addToast('Image could not be compressed below 4MB', 'error')
         return
       }
 
-      if (data.url) {
-        setValue('cover_image', data.url)
-        addToast('Image uploaded', 'success')
-      }
+      const url = await uploadImage(compressed, { signal: controller.signal })
+
+      setValue('cover_image', url)
+      addToast('Image uploaded', 'success')
     } catch (err) {
       if (err instanceof DOMException && err.name === 'AbortError') {
-        addToast('Upload timed out. Try a smaller image.', 'error')
+        addToast('Upload timed out. Check your connection and try again.', 'error')
       } else {
         addToast('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'), 'error')
       }
     } finally {
+      clearTimeout(timeout)
       setUploading(false)
     }
   }
