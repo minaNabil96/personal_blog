@@ -248,20 +248,29 @@ export function PostForm({ locale, post }: { locale: string; post?: PostEditData
       const call = (): Promise<ActionResult> =>
         (post ? updatePost(post.id, formData) : createPost(formData)) as Promise<ActionResult>
 
-      // The connection can drop after the server has already saved the post
-      // (it happened: the row was in the database but the browser saw a network
-      // error). Both actions are idempotent, so retrying once is safe and
-      // usually turns that loss into a success.
-      let result: ActionResult | null = null
-      try {
-        result = await withTimeout(call(), 90_000)
-      } catch (first) {
-        console.error('[PostForm] save request failed, retrying once', first)
-        await new Promise((resolve) => setTimeout(resolve, 1500))
-        formData.append('_retry', '1')
-        result = await withTimeout(call(), 90_000)
+      // A reply can be lost or stalled long after the server answered (seen:
+      // 19.6s in the browser for a 359ms save, and one save whose response
+      // never arrived at all). Both actions are idempotent, so a stalled
+      // attempt is abandoned and re-sent rather than waited out.
+      const attempt = async (ms: number) => {
+        try {
+          return { ok: true as const, result: await withTimeout(call(), ms) }
+        } catch (error) {
+          return { ok: false as const, error }
+        }
       }
 
+      let outcome = await attempt(10_000)
+      if (!outcome.ok || outcome.result === null) {
+        console.warn('[PostForm] no usable reply, re-sending the save', outcome.ok ? 'stalled' : outcome.error)
+        await new Promise((resolve) => setTimeout(resolve, 800))
+        formData.append('_retry', '1')
+        outcome = await attempt(30_000)
+      }
+
+      if (!outcome.ok) throw outcome.error
+
+      const result = outcome.result
       if (!result) {
         addToast(
           'The server took too long to respond. Your post may still be saving — check the Posts list before trying again.',
